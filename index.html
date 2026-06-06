@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 被罵預測 App - Scolding Predictor v2.0</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0/dist/tf.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --panel-bg: #2d2d2d;
+            --text-main: #ffffff;
+            --text-muted: #b3b3b3;
+            --accent-orange: #ff7043;
+            --btn-blue: #2196f3;
+            --btn-blue-hover: #1976d2;
+            --btn-red: #f44336;
+            --btn-red-hover: #d32f2f;
+            --btn-green: #4caf50;
+            --btn-green-hover: #388e3c;
+            --border-color: #444;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 5px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        /* 面板共用樣式 */
+        .panel {
+            background-color: var(--panel-bg);
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .panel-header {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        /* 標題左側的橘色裝飾線 */
+        .panel-header::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 20px;
+            background-color: var(--accent-orange);
+            margin-right: 10px;
+            border-radius: 2px;
+        }
+
+        /* 輸入區塊 */
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            background-color: #1e1e1e;
+            border: 1px solid var(--border-color);
+            color: white;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-predict { background-color: var(--btn-blue); }
+        .btn-predict:hover { background-color: var(--btn-blue-hover); }
+
+        /* 結果顯示區塊 */
+        .result-panel {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px;
+        }
+
+        .result-percentage {
+            font-size: 40px;
+            font-weight: bold;
+            color: var(--btn-red);
+            margin-bottom: 10px;
+        }
+
+        .warning-icon {
+            font-size: 60px;
+            margin: 10px 0;
+        }
+
+        .comment {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ddd;
+        }
+
+        /* 回饋區塊 */
+        .feedback-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .btn-y { background-color: var(--btn-red); }
+        .btn-y:hover { background-color: var(--btn-red-hover); }
+        .btn-n { background-color: var(--btn-green); }
+        .btn-n:hover { background-color: var(--btn-green-hover); }
+        
+        .feedback-panel {
+            opacity: 0.5;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .feedback-panel.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* 歷史表格區塊 */
+        .table-container {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--accent-orange);
+            color: #fff;
+            position: sticky;
+            top: 0;
+        }
+
+        td { font-size: 14px; }
+
+        .btn-delete {
+            background-color: transparent;
+            border: 1px solid var(--btn-red);
+            color: var(--btn-red);
+            padding: 4px 8px;
+            font-size: 12px;
+            width: auto;
+        }
+        .btn-delete:hover {
+            background-color: var(--btn-red);
+            color: white;
+        }
+
+        .data-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid #888;
+            color: #ddd;
+        }
+        .btn-outline:hover {
+            background-color: #444;
+        }
+
+        /* 狀態列 */
+        .status-bar {
+            width: 100%;
+            max-width: 1000px;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #222;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* RWD */
+        @media (max-width: 768px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>AI 被罵預測 App</h1>
+    <div class="subtitle">Scolding Predictor v2.0</div>
+
+    <div class="grid-container">
+        
+        <div class="panel">
+            <div class="panel-header">數據輸入與預測 (Data Input & Predict)</div>
+            <div class="input-group">
+                <label for="scoreInput">本次分數 (Score)：</label>
+                <input type="number" id="scoreInput" min="0" max="100" value="0">
+            </div>
+            <button class="btn-predict" onclick="predictScolding()">計算被罵機率</button>
+        </div>
+
+        <div class="panel feedback-panel" id="feedbackPanel">
+            <div class="panel-header">實際結果回饋 (Actual Feedback)</div>
+            <div style="text-align: center; margin-top: 20px;">
+                <p>本次預測分數：<span id="currentScoreDisplay">--</span></p>
+                <p><strong>本次實際有沒有被罵？</strong></p>
+                <div class="feedback-buttons">
+                    <button class="btn-y" onclick="submitFeedback(1)">Y - 被罵了</button>
+                    <button class="btn-n" onclick="submitFeedback(0)">N - 安全過關</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel result-panel">
+            <div id="resultOutput" style="display: none; width: 100%;">
+                <div class="result-percentage" id="predPercentage">預估被罵機率：--%</div>
+                <div class="warning-icon" id="predIcon">⚠️</div>
+                <div class="comment" id="predComment">評語：--</div>
+            </div>
+            <div id="resultPlaceholder" style="color: var(--text-muted);">
+                請輸入分數並點擊計算
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">歷史數據與管理 (History & Management)</div>
+            <div class="table-container">
+                <table id="historyTable">
+                    <thead>
+                        <tr>
+                            <th>日期</th>
+                            <th>分數</th>
+                            <th>實際結果</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+            </div>
+            <div class="data-actions">
+                <button class="btn-outline" onclick="exportData()">匯出 JSON</button>
+                <button class="btn-outline" onclick="document.getElementById('importFile').click()">匯入資料</button>
+                <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+            </div>
+        </div>
+
+    </div>
+
+    <div class="status-bar" id="statusBar">
+        模型狀態：初始化中...
+    </div>
+
+    <script>
+        // === 1. 全域變數與資料狀態 ===
+        let model = null;         // TensorFlow.js 模型實例
+        let historyData = [];     // 儲存歷史紀錄的陣列 {id, date, score, label}
+        let currentScore = null;  // 當前預測的分數（用於提交回饋）
+
+        // === 2. 初始化流程 ===
+        window.onload = async () => {
+            loadHistory();
+            renderTable();
+            await initModel();
+            await trainModel(); // 若資料足夠則啟動訓練
+        };
+
+        // === 3. 機器學習模型核心 (TensorFlow.js) ===
+        
+        // 建立模型架構
+        async function initModel() {
+            // 使用 tf.sequential 建立循序模型
+            model = tf.sequential();
+            
+            // 建立一個 Dense 層（全連接層）。
+            // 由於是簡單的單一特徵（分數）進行二元分類，使用 1 個 unit 和 sigmoid 激活函數（輸出 0~1 的機率）。
+            // 這本質上等同於 Logistic Regression（邏輯斯迴歸）。
+            model.add(tf.layers.dense({
+                units: 1, 
+                inputShape: [1], 
+                activation: 'sigmoid' 
+            }));
+
+            // 編譯模型
+            // optimizer 使用 adam，learning rate 設大一點 (0.1) 讓小資料量能快速收斂。
+            // loss 使用 binaryCrossentropy (二元交叉熵)，專門用於二元分類。
+            model.compile({
+                optimizer: tf.train.adam(0.1),
+                loss: 'binaryCrossentropy',
+                metrics: ['accuracy']
+            });
+        }
+
+        // 訓練模型
+        async function trainModel() {
+            // 篩選有效的資料
+            const validData = historyData.filter(d => typeof d.score === 'number' && typeof d.label === 'number');
+            
+            // 檢查是否符合最低訓練條件：至少 5 筆，且必須包含 Y(1) 和 N(0)
+            const hasY = validData.some(d => d.label === 1);
+            const hasN = validData.some(d => d.label === 0);
+
+            if (validData.length < 5 || !hasY || !hasN) {
+                updateStatus(`模型狀態：資料不足 (目前 ${validData.length} 筆，需至少 5 筆且包含 Y/N)，目前使用預設規則預測。`);
+                return;
+            }
+
+            updateStatus(`模型狀態：AI 學習中... (資料量: ${validData.length})`);
+
+            // 準備訓練特徵 (X) 與標籤 (Y)
+            // 將分數除以 100 進行正規化 (Normalization)，讓值介於 0~1，有助於 Sigmoid 函數收斂
+            const xs = tf.tensor2d(validData.map(d => [d.score / 100]));
+            const ys = tf.tensor2d(validData.map(d => [d.label]));
+
+            try {
+                // 執行訓練 (Fit)
+                const history = await model.fit(xs, ys, {
+                    epochs: 100, // 訓練 100 個週期
+                    shuffle: true
+                });
+
+                // 取得最後一次的 Loss 值
+                const finalLoss = history.history.loss[history.history.loss.length - 1];
+                updateStatus(`模型狀態：AI 分類模型訓練完成 (Data Points: ${validData.length}, Loss: ${finalLoss.toFixed(4)}, Binary Crossentropy)`);
+            } catch (error) {
+                console.error("Training error:", error);
+                updateStatus("模型狀態：訓練失敗，請檢查控制台。");
+            } finally {
+                // 釋放記憶體，避免 Memory Leak
+                xs.dispose();
+                ys.dispose();
+            }
+        }
+
+        // 預測功能
+        async function predictScolding() {
+            const scoreInput = document.getElementById('scoreInput').value;
+            if (scoreInput === '' || scoreInput < 0 || scoreInput > 100) {
+                alert('請輸入 0 到 100 之間的有效分數！');
+                return;
+            }
+
+            currentScore = parseFloat(scoreInput);
+            let probability = 0;
+
+            const validData = historyData.filter(d => typeof d.score === 'number' && typeof d.label === 'number');
+            const hasY = validData.some(d => d.label === 1);
+            const hasN = validData.some(d => d.label === 0);
+
+            // 判斷要使用 AI 預測還是基礎邏輯
+            if (validData.length >= 5 && hasY && hasN) {
+                // [AI 預測模式]
+                // 將輸入分數正規化，轉換為 Tensor
+                const inputTensor = tf.tensor2d([[currentScore / 100]]);
+                // 執行預測
+                const prediction = model.predict(inputTensor);
+                // 同步取得機率數值 (0~1)
+                const probValue = prediction.dataSync()[0]; 
+                probability = Math.round(probValue * 100);
+                
+                // 清理記憶體
+                inputTensor.dispose();
+                prediction.dispose();
+            } else {
+                // [基礎邏輯模式 (Fallback)]
+                if (currentScore < 60) {
+                    probability = 90;
+                } else {
+                    probability = Math.max(0, 100 - currentScore);
+                }
+            }
+
+            displayResult(probability);
+
+            // 啟用回饋面板
+            document.getElementById('currentScoreDisplay').innerText = currentScore;
+            document.getElementById('feedbackPanel').classList.add('active');
+        }
+
+        // === 4. UI 互動與視覺更新 ===
+
+        function displayResult(prob) {
+            document.getElementById('resultPlaceholder').style.display = 'none';
+            document.getElementById('resultOutput').style.display = 'block';
+            
+            const predText = document.getElementById('predPercentage');
+            const icon = document.getElementById('predIcon');
+            const comment = document.getElementById('predComment');
+
+            predText.innerText = `預估被罵機率：${prob}%`;
+
+            // 根據機率改變樣式與評語
+            if (prob >= 80) {
+                predText.style.color = 'var(--btn-red)';
+                icon.innerText = '🌋🤬';
+                comment.innerText = '評語：塊陶啊！大難臨頭！';
+            } else if (prob >= 50) {
+                predText.style.color = 'var(--accent-orange)';
+                icon.innerText = '😰⚠️';
+                comment.innerText = '評語：危險邊緣，建議先去洗碗陪笑臉。';
+            } else if (prob >= 20) {
+                predText.style.color = '#ffeb3b';
+                icon.innerText = '😐💧';
+                comment.innerText = '評語：有一點點危險，記得察言觀色。';
+            } else {
+                predText.style.color = 'var(--btn-green)';
+                icon.innerText = '😎✨';
+                comment.innerText = '評語：穩如泰山！今天可以橫著走。';
+            }
+        }
+
+        function updateStatus(message) {
+            document.getElementById('statusBar').innerText = message;
+        }
+
+        // === 5. 資料管理 (CRUD, LocalStorage) ===
+
+        function submitFeedback(label) {
+            if (currentScore === null) return;
+
+            const record = {
+                id: Date.now(),
+                date: new Date().toISOString().split('T')[0],
+                score: currentScore,
+                label: label // 1 標示 Y(被罵), 0 標示 N(安全)
+            };
+
+            historyData.unshift(record); // 加到陣列最前面
+            saveHistory();
+            renderTable();
+            
+            // 重置回饋區塊
+            document.getElementById('feedbackPanel').classList.remove('active');
+            currentScore = null;
+            document.getElementById('currentScoreDisplay').innerText = '--';
+
+            // 每次新增資料後重新訓練模型
+            trainModel();
+        }
+
+        function deleteRecord(id) {
+            historyData = historyData.filter(d => d.id !== id);
+            saveHistory();
+            renderTable();
+            trainModel(); // 刪除資料後重新訓練模型
+        }
+
+        function saveHistory() {
+            localStorage.setItem('scolding_history', JSON.stringify(historyData));
+        }
+
+        function loadHistory() {
+            const saved = localStorage.getItem('scolding_history');
+            if (saved) {
+                try {
+                    historyData = JSON.parse(saved);
+                } catch (e) {
+                    console.error("資料解析失敗", e);
+                    historyData = [];
+                }
+            }
+        }
+
+        function renderTable() {
+            const tbody = document.querySelector('#historyTable tbody');
+            tbody.innerHTML = '';
+            
+            if (historyData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="color:#888;">尚無歷史紀錄</td></tr>';
+                return;
+            }
+
+            historyData.forEach(item => {
+                const tr = document.createElement('tr');
+                const resultText = item.label === 1 ? '<span style="color:var(--btn-red)">Y</span>' : '<span style="color:var(--btn-green)">N</span>';
+                
+                tr.innerHTML = `
+                    <td>${item.date}</td>
+                    <td>${item.score}</td>
+                    <td>${resultText}</td>
+                    <td><button class="btn-delete" onclick="deleteRecord(${item.id})">刪除</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // === 6. 資料匯出與匯入 ===
+
+        function exportData() {
+            if (historyData.length === 0) {
+                alert("目前沒有資料可以匯出。");
+                return;
+            }
+            const dataStr = JSON.stringify(historyData, null, 2);
+            const blob = new Blob([dataStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `scolding_history_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (Array.isArray(importedData)) {
+                        // 合併資料並去重（簡單防呆）
+                        historyData = [...importedData];
+                        saveHistory();
+                        renderTable();
+                        trainModel(); // 匯入後重新訓練
+                        alert("資料匯入成功！");
+                    } else {
+                        alert("匯入失敗：JSON 格式不正確。");
+                    }
+                } catch (error) {
+                    alert("檔案讀取失敗，請確認是否為正確的 JSON 檔。");
+                }
+            };
+            reader.readAsText(file);
+            // 清空 input 讓同一個檔案可以重複選取
+            event.target.value = '';
+        }
+    </script>
+</body>
+</html>
