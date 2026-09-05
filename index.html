@@ -1,609 +1,694 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-9XTP5M5SEC"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>口說模擬測驗 · GEPT 中級 第二部分</title>
+<style>
+  :root {
+    --ink: #121820;
+    --panel: #1b242e;
+    --panel-raised: #222c37;
+    --border: #2c3945;
+    --text: #eeeae1;
+    --text-dim: #93a1ac;
+    --amber: #e8a33d;
+    --amber-dim: #6b5528;
+    --sage: #7fa085;
+    --brick: #c1584d;
+    --serif: Georgia, "Iowan Old Style", "Noto Serif TC", serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  }
 
-  gtag('config', 'G-9XTP5M5SEC');
-</script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 被罵預測 App - Scolding Predictor v2.0</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0/dist/tf.min.js"></script>
-    <style>
-        :root {
-            --bg-color: #121212;
-            --panel-bg: #2d2d2d;
-            --text-main: #ffffff;
-            --text-muted: #b3b3b3;
-            --accent-orange: #ff7043;
-            --btn-blue: #2196f3;
-            --btn-blue-hover: #1976d2;
-            --btn-red: #f44336;
-            --btn-red-hover: #d32f2f;
-            --btn-green: #4caf50;
-            --btn-green-hover: #388e3c;
-            --border-color: #444;
-        }
+  * { box-sizing: border-box; }
 
-        * {
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--ink);
+    color: var(--text);
+    font-family: var(--sans);
+    display: flex;
+    justify-content: center;
+    padding: 0;
+  }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
+  .app {
+    width: 100%;
+    max-width: 480px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 28px 20px 40px;
+  }
 
-        h1 {
-            text-align: center;
-            margin-bottom: 5px;
-            font-size: 28px;
-        }
+  /* ---------- Header ---------- */
+  .masthead {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .masthead .kicker {
+    font-size: 13px;
+    color: var(--text-dim);
+    letter-spacing: 0.02em;
+  }
+  .masthead h1 {
+    font-family: var(--serif);
+    font-size: 28px;
+    font-weight: 600;
+    margin: 6px 0 0;
+    color: var(--text);
+  }
 
-        .subtitle {
-            text-align: center;
-            color: var(--text-muted);
-            margin-bottom: 30px;
-        }
+  /* ---------- Intro screen ---------- */
+  .intro-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 26px 22px;
+  }
+  .intro-card h2 {
+    font-family: var(--serif);
+    font-size: 19px;
+    margin: 0 0 14px;
+  }
+  .spec-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0 20px;
+    font-size: 14px;
+  }
+  .spec-table td {
+    padding: 9px 4px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+  .spec-table td:last-child {
+    text-align: right;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+  .intro-notes {
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--text-dim);
+    margin: 0 0 22px;
+  }
+  .intro-notes li { margin-bottom: 4px; }
 
-        .grid-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            max-width: 1000px;
-            width: 100%;
-        }
+  button.primary {
+    width: 100%;
+    background: var(--amber);
+    color: #201405;
+    border: none;
+    border-radius: 10px;
+    padding: 15px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: var(--sans);
+    cursor: pointer;
+  }
+  button.primary:disabled { opacity: 0.5; cursor: default; }
+  button.ghost {
+    width: 100%;
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 15px;
+    font-family: var(--sans);
+    cursor: pointer;
+    margin-top: 10px;
+  }
 
-        /* 面板共用樣式 */
-        .panel {
-            background-color: var(--panel-bg);
-            border-radius: 8px;
-            padding: 20px;
-            border: 1px solid var(--border-color);
-            position: relative;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-        }
+  .error-box {
+    background: rgba(193, 88, 77, 0.12);
+    border: 1px solid var(--brick);
+    color: #f0c9c4;
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 13.5px;
+    line-height: 1.6;
+    margin-top: 16px;
+    display: none;
+  }
 
-        .panel-header {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-        }
+  /* ---------- Progress dots ---------- */
+  .progress {
+    display: flex;
+    justify-content: center;
+    gap: 7px;
+    margin-bottom: 22px;
+  }
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+  }
+  .dot.done { background: var(--sage); }
+  .dot.active { background: var(--amber); }
 
-        /* 標題左側的橘色裝飾線 */
-        .panel-header::before {
-            content: '';
-            display: inline-block;
-            width: 4px;
-            height: 20px;
-            background-color: var(--accent-orange);
-            margin-right: 10px;
-            border-radius: 2px;
-        }
+  /* ---------- Question screen ---------- */
+  .q-screen { display: none; flex-direction: column; align-items: center; flex: 1; }
+  .q-meta {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+  }
+  .q-text {
+    font-family: var(--serif);
+    font-size: 22px;
+    line-height: 1.5;
+    text-align: center;
+    min-height: 92px;
+    display: flex;
+    align-items: center;
+    padding: 0 6px;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .q-text.shown { opacity: 1; }
 
-        /* 輸入區塊 */
-        .input-group {
-            margin-bottom: 15px;
-        }
+  .ring-wrap {
+    position: relative;
+    width: 172px; height: 172px;
+    margin: 30px 0 18px;
+  }
+  .ring-wrap svg { transform: rotate(-90deg); }
+  .ring-bg { fill: none; stroke: var(--border); stroke-width: 8; }
+  .ring-fg { fill: none; stroke: var(--amber); stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 1s linear, stroke 0.3s ease; }
+  .ring-fg.urgent { stroke: var(--brick); }
+  .ring-center {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .ring-num {
+    font-size: 40px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    font-family: var(--sans);
+  }
+  .ring-label {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
 
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-muted);
-        }
+  .status-line {
+    font-size: 14px;
+    color: var(--amber);
+    font-weight: 600;
+    min-height: 20px;
+    margin-bottom: 10px;
+  }
 
-        .input-group input {
-            width: 100%;
-            padding: 10px;
-            background-color: #1e1e1e;
-            border: 1px solid var(--border-color);
-            color: white;
-            border-radius: 4px;
-            font-size: 16px;
-        }
+  .caption-box {
+    width: 100%;
+    min-height: 64px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-dim);
+  }
+  .caption-box .live { color: var(--text); }
 
-        button {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            font-weight: bold;
-            color: white;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
+  /* ---------- Results screen ---------- */
+  .results-screen { display: none; flex-direction: column; }
+  .summary-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 18px;
+  }
+  .summary-card h2 {
+    font-family: var(--serif);
+    font-size: 18px;
+    margin: 0 0 10px;
+  }
+  .summary-text {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text-dim);
+    margin: 0 0 14px;
+  }
+  .metric-row { margin-bottom: 10px; }
+  .metric-label {
+    display: flex; justify-content: space-between;
+    font-size: 12.5px; color: var(--text-dim); margin-bottom: 4px;
+  }
+  .metric-bar-bg { background: var(--panel-raised); border-radius: 6px; height: 7px; overflow: hidden; }
+  .metric-bar-fg { height: 100%; background: var(--sage); border-radius: 6px; }
 
-        .btn-predict { background-color: var(--btn-blue); }
-        .btn-predict:hover { background-color: var(--btn-blue-hover); }
+  .q-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+  }
+  .q-card .num {
+    font-size: 12px;
+    color: var(--amber);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .q-card .qtext {
+    font-family: var(--serif);
+    font-size: 15.5px;
+    margin-bottom: 10px;
+  }
+  .q-card .field-label {
+    font-size: 11px;
+    text-transform: none;
+    color: var(--text-dim);
+    margin-bottom: 3px;
+  }
+  .q-card .your-answer {
+    font-size: 14px;
+    color: var(--text);
+    margin-bottom: 10px;
+    line-height: 1.55;
+  }
+  .q-card .feedback {
+    font-size: 13.5px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    border-top: 1px solid var(--border);
+    padding-top: 10px;
+  }
+  .q-card .reaction {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 8px;
+  }
 
-        /* 結果顯示區塊 */
-        .result-panel {
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 200px;
-        }
-
-        .result-percentage {
-            font-size: 40px;
-            font-weight: bold;
-            color: var(--btn-red);
-            margin-bottom: 10px;
-        }
-
-        .warning-icon {
-            font-size: 60px;
-            margin: 10px 0;
-        }
-
-        .comment {
-            font-size: 18px;
-            font-weight: bold;
-            color: #ddd;
-        }
-
-        /* 回饋區塊 */
-        .feedback-buttons {
-            display: flex;
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .btn-y { background-color: var(--btn-red); }
-        .btn-y:hover { background-color: var(--btn-red-hover); }
-        .btn-n { background-color: var(--btn-green); }
-        .btn-n:hover { background-color: var(--btn-green-hover); }
-        
-        .feedback-panel {
-            opacity: 0.5;
-            pointer-events: none;
-            transition: opacity 0.3s;
-        }
-        .feedback-panel.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        /* 歷史表格區塊 */
-        .table-container {
-            max-height: 200px;
-            overflow-y: auto;
-            margin-bottom: 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            padding: 10px;
-            text-align: center;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        th {
-            background-color: var(--accent-orange);
-            color: #fff;
-            position: sticky;
-            top: 0;
-        }
-
-        td { font-size: 14px; }
-
-        .btn-delete {
-            background-color: transparent;
-            border: 1px solid var(--btn-red);
-            color: var(--btn-red);
-            padding: 4px 8px;
-            font-size: 12px;
-            width: auto;
-        }
-        .btn-delete:hover {
-            background-color: var(--btn-red);
-            color: white;
-        }
-
-        .data-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn-outline {
-            background-color: transparent;
-            border: 1px solid #888;
-            color: #ddd;
-        }
-        .btn-outline:hover {
-            background-color: #444;
-        }
-
-        /* 狀態列 */
-        .status-bar {
-            width: 100%;
-            max-width: 1000px;
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #222;
-            border-top: 1px solid var(--border-color);
-            color: var(--text-muted);
-            font-size: 14px;
-        }
-
-        /* RWD */
-        @media (max-width: 768px) {
-            .grid-container {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+  .spinner {
+    width: 34px; height: 34px;
+    border: 3px solid var(--border);
+    border-top-color: var(--amber);
+    border-radius: 50%;
+    margin: 40px auto 16px;
+    animation: spin 0.9s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .analyzing-text {
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 14px;
+  }
+</style>
 </head>
 <body>
 
-    <h1>AI 被罵預測 App</h1>
-    <div class="subtitle">Scolding Predictor v2.0</div>
+<div class="app">
+  <div class="masthead">
+    <div class="kicker">口說模擬測驗</div>
+    <h1>GEPT 中級 · 第二部分</h1>
+  </div>
 
-    <div class="grid-container">
-        
-        <div class="panel">
-            <div class="panel-header">數據輸入與預測 (Data Input & Predict)</div>
-            <div class="input-group">
-                <label for="scoreInput">本次分數 (Score)：</label>
-                <input type="number" id="scoreInput" min="0" max="100" value="0">
-            </div>
-            <button class="btn-predict" onclick="predictScolding()">計算被罵機率</button>
-        </div>
+  <!-- INTRO -->
+  <div class="intro-card" id="introScreen">
+    <h2>問答（共 10 題）</h2>
+    <table class="spec-table">
+      <tr><td>第 1–5 題</td><td>作答 15 秒</td></tr>
+      <tr><td>第 6–10 題</td><td>作答 30 秒</td></tr>
+      <tr><td>準備時間</td><td>無</td></tr>
+    </table>
+    <ul class="intro-notes">
+      <li>系統會唸出題目，唸完立即開始計時並錄下你的回答</li>
+      <li>時間到會自動跳下一題，無法暫停或重來單題</li>
+      <li>需要允許瀏覽器使用麥克風，建議使用 Chrome 瀏覽器</li>
+      <li>10 題答完後統一產生文法與反應速度回饋</li>
+    </ul>
+    <button class="primary" id="startBtn">開始測驗</button>
+    <div class="error-box" id="errorBox"></div>
+  </div>
 
-        <div class="panel feedback-panel" id="feedbackPanel">
-            <div class="panel-header">實際結果回饋 (Actual Feedback)</div>
-            <div style="text-align: center; margin-top: 20px;">
-                <p>本次預測分數：<span id="currentScoreDisplay">--</span></p>
-                <p><strong>本次實際有沒有被罵？</strong></p>
-                <div class="feedback-buttons">
-                    <button class="btn-y" onclick="submitFeedback(1)">Y - 被罵了</button>
-                    <button class="btn-n" onclick="submitFeedback(0)">N - 安全過關</button>
-                </div>
-            </div>
-        </div>
+  <!-- QUESTION SCREEN -->
+  <div class="q-screen" id="qScreen">
+    <div class="progress" id="progressDots"></div>
+    <div class="q-meta" id="qMeta"></div>
+    <div class="q-text" id="qText"></div>
 
-        <div class="panel result-panel">
-            <div id="resultOutput" style="display: none; width: 100%;">
-                <div class="result-percentage" id="predPercentage">預估被罵機率：--%</div>
-                <div class="warning-icon" id="predIcon">⚠️</div>
-                <div class="comment" id="predComment">評語：--</div>
-            </div>
-            <div id="resultPlaceholder" style="color: var(--text-muted);">
-                請輸入分數並點擊計算
-            </div>
-        </div>
-
-        <div class="panel">
-            <div class="panel-header">歷史數據與管理 (History & Management)</div>
-            <div class="table-container">
-                <table id="historyTable">
-                    <thead>
-                        <tr>
-                            <th>日期</th>
-                            <th>分數</th>
-                            <th>實際結果</th>
-                            <th>操作</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        </tbody>
-                </table>
-            </div>
-            <div class="data-actions">
-                <button class="btn-outline" onclick="exportData()">匯出 JSON</button>
-                <button class="btn-outline" onclick="document.getElementById('importFile').click()">匯入資料</button>
-                <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
-            </div>
-        </div>
-
+    <div class="ring-wrap">
+      <svg width="172" height="172" viewBox="0 0 172 172">
+        <circle class="ring-bg" cx="86" cy="86" r="78"></circle>
+        <circle class="ring-fg" id="ringFg" cx="86" cy="86" r="78"></circle>
+      </svg>
+      <div class="ring-center">
+        <div class="ring-num" id="ringNum">–</div>
+        <div class="ring-label" id="ringLabel"></div>
+      </div>
     </div>
 
-    <div class="status-bar" id="statusBar">
-        模型狀態：初始化中...
+    <div class="status-line" id="statusLine"></div>
+    <div class="caption-box"><span class="live" id="captionText">…</span></div>
+  </div>
+
+  <!-- ANALYZING -->
+  <div id="analyzingScreen" style="display:none;">
+    <div class="spinner"></div>
+    <div class="analyzing-text">正在分析 10 題的文法與反應速度…</div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results-screen" id="resultsScreen">
+    <div class="summary-card">
+      <h2>總評</h2>
+      <p class="summary-text" id="summaryText">–</p>
+      <div id="metricRows"></div>
     </div>
+    <div id="qCardsWrap"></div>
+    <button class="ghost" id="restartBtn">再測一次</button>
+  </div>
+</div>
 
-    <script>
-        // === 1. 全域變數與資料狀態 ===
-        let model = null;         // TensorFlow.js 模型實例
-        let historyData = [];     // 儲存歷史紀錄的陣列 {id, date, score, label}
-        let currentScore = null;  // 當前預測的分數（用於提交回饋）
+<script>
+const QUESTIONS = [
+  { text: "Hi! How was your weekend?", seconds: 15 },
+  { text: "Excuse me, could you tell me how to get to the library?", seconds: 15 },
+  { text: "I'm sorry I'm late. The bus took forever.", seconds: 15 },
+  { text: "Would you like to join us for lunch today?", seconds: 15 },
+  { text: "What time does your English class start tomorrow?", seconds: 15 },
+  { text: "What do you usually do to relax after a long day at school?", seconds: 30 },
+  { text: "My phone broke this morning and I missed an important call. What should I do?", seconds: 30 },
+  { text: "What's your favorite subject in school, and why do you like it?", seconds: 30 },
+  { text: "If you could travel anywhere in the world, where would you go and why?", seconds: 30 },
+  { text: "Can you describe your best friend and what makes your friendship special?", seconds: 30 },
+];
 
-        // === 2. 初始化流程 ===
-        window.onload = async () => {
-            loadHistory();
-            renderTable();
-            await initModel();
-            await trainModel(); // 若資料足夠則啟動訓練
-        };
+const introScreen = document.getElementById('introScreen');
+const qScreen = document.getElementById('qScreen');
+const analyzingScreen = document.getElementById('analyzingScreen');
+const resultsScreen = document.getElementById('resultsScreen');
+const startBtn = document.getElementById('startBtn');
+const errorBox = document.getElementById('errorBox');
+const progressDots = document.getElementById('progressDots');
+const qMeta = document.getElementById('qMeta');
+const qText = document.getElementById('qText');
+const ringFg = document.getElementById('ringFg');
+const ringNum = document.getElementById('ringNum');
+const ringLabel = document.getElementById('ringLabel');
+const statusLine = document.getElementById('statusLine');
+const captionText = document.getElementById('captionText');
+const restartBtn = document.getElementById('restartBtn');
 
-        // === 3. 機器學習模型核心 (TensorFlow.js) ===
-        
-        // 建立模型架構
-        async function initModel() {
-            // 使用 tf.sequential 建立循序模型
-            model = tf.sequential();
-            
-            // 建立一個 Dense 層（全連接層）。
-            // 由於是簡單的單一特徵（分數）進行二元分類，使用 1 個 unit 和 sigmoid 激活函數（輸出 0~1 的機率）。
-            // 這本質上等同於 Logistic Regression（邏輯斯迴歸）。
-            model.add(tf.layers.dense({
-                units: 1, 
-                inputShape: [1], 
-                activation: 'sigmoid' 
-            }));
+const RADIUS = 78;
+const CIRC = 2 * Math.PI * RADIUS;
+ringFg.style.strokeDasharray = CIRC;
 
-            // 編譯模型
-            // optimizer 使用 adam，learning rate 設大一點 (0.1) 讓小資料量能快速收斂。
-            // loss 使用 binaryCrossentropy (二元交叉熵)，專門用於二元分類。
-            model.compile({
-                optimizer: tf.train.adam(0.1),
-                loss: 'binaryCrossentropy',
-                metrics: ['accuracy']
-            });
-        }
+const SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-        // 訓練模型
-        async function trainModel() {
-            // 篩選有效的資料
-            const validData = historyData.filter(d => typeof d.score === 'number' && typeof d.label === 'number');
-            
-            // 檢查是否符合最低訓練條件：至少 5 筆，且必須包含 Y(1) 和 N(0)
-            const hasY = validData.some(d => d.label === 1);
-            const hasN = validData.some(d => d.label === 0);
+let results = []; // { question, seconds, transcript, reactionMs }
 
-            if (validData.length < 5 || !hasY || !hasN) {
-                updateStatus(`模型狀態：資料不足 (目前 ${validData.length} 筆，需至少 5 筆且包含 Y/N)，目前使用預設規則預測。`);
-                return;
-            }
+function showError(msg) {
+  errorBox.style.display = 'block';
+  errorBox.textContent = msg;
+}
 
-            updateStatus(`模型狀態：AI 學習中... (資料量: ${validData.length})`);
+function buildDots() {
+  progressDots.innerHTML = '';
+  for (let i = 0; i < QUESTIONS.length; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot';
+    d.id = 'dot' + i;
+    progressDots.appendChild(d);
+  }
+}
 
-            // 準備訓練特徵 (X) 與標籤 (Y)
-            // 將分數除以 100 進行正規化 (Normalization)，讓值介於 0~1，有助於 Sigmoid 函數收斂
-            const xs = tf.tensor2d(validData.map(d => [d.score / 100]));
-            const ys = tf.tensor2d(validData.map(d => [d.label]));
+function setDot(i, cls) {
+  const d = document.getElementById('dot' + i);
+  if (d) d.className = 'dot ' + cls;
+}
 
-            try {
-                // 執行訓練 (Fit)
-                const history = await model.fit(xs, ys, {
-                    epochs: 100, // 訓練 100 個週期
-                    shuffle: true
-                });
+function speak(text) {
+  return new Promise((resolve) => {
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US';
+    u.rate = 0.98;
+    u.onend = resolve;
+    u.onerror = resolve;
+    window.speechSynthesis.speak(u);
+  });
+}
 
-                // 取得最後一次的 Loss 值
-                const finalLoss = history.history.loss[history.history.loss.length - 1];
-                updateStatus(`模型狀態：AI 分類模型訓練完成 (Data Points: ${validData.length}, Loss: ${finalLoss.toFixed(4)}, Binary Crossentropy)`);
-            } catch (error) {
-                console.error("Training error:", error);
-                updateStatus("模型狀態：訓練失敗，請檢查控制台。");
-            } finally {
-                // 釋放記憶體，避免 Memory Leak
-                xs.dispose();
-                ys.dispose();
-            }
-        }
+async function runExam() {
+  if (!SpeechRecognitionCtor) {
+    showError('這個瀏覽器不支援語音辨識（Web Speech API）。請改用電腦版 Chrome 或 Edge 開啟這個頁面再試一次。');
+    return;
+  }
 
-        // 預測功能
-        async function predictScolding() {
-            const scoreInput = document.getElementById('scoreInput').value;
-            if (scoreInput === '' || scoreInput < 0 || scoreInput > 100) {
-                alert('請輸入 0 到 100 之間的有效分數！');
-                return;
-            }
+  try {
+    await navigator.mediaDevices.getUserMedia({ audio: true });
+  } catch (e) {
+    showError('無法取得麥克風權限，請允許瀏覽器存取麥克風後再重新整理頁面。');
+    return;
+  }
 
-            currentScore = parseFloat(scoreInput);
-            let probability = 0;
+  errorBox.style.display = 'none';
+  introScreen.style.display = 'none';
+  qScreen.style.display = 'flex';
+  buildDots();
+  results = [];
 
-            const validData = historyData.filter(d => typeof d.score === 'number' && typeof d.label === 'number');
-            const hasY = validData.some(d => d.label === 1);
-            const hasN = validData.some(d => d.label === 0);
+  for (let i = 0; i < QUESTIONS.length; i++) {
+    setDot(i, 'active');
+    await runQuestion(i, QUESTIONS[i]);
+    setDot(i, 'done');
+  }
 
-            // 判斷要使用 AI 預測還是基礎邏輯
-            if (validData.length >= 5 && hasY && hasN) {
-                // [AI 預測模式]
-                // 將輸入分數正規化，轉換為 Tensor
-                const inputTensor = tf.tensor2d([[currentScore / 100]]);
-                // 執行預測
-                const prediction = model.predict(inputTensor);
-                // 同步取得機率數值 (0~1)
-                const probValue = prediction.dataSync()[0]; 
-                probability = Math.round(probValue * 100);
-                
-                // 清理記憶體
-                inputTensor.dispose();
-                prediction.dispose();
-            } else {
-                // [基礎邏輯模式 (Fallback)]
-                if (currentScore < 60) {
-                    probability = 90;
-                } else {
-                    probability = Math.max(0, 100 - currentScore);
-                }
-            }
+  qScreen.style.display = 'none';
+  await analyzeAll();
+}
 
-            displayResult(probability);
+function runQuestion(index, q) {
+  return new Promise(async (resolve) => {
+    qMeta.textContent = `第 ${index + 1} / 10 題 · 作答 ${q.seconds} 秒`;
+    qText.classList.remove('shown');
+    qText.textContent = q.text;
+    ringNum.textContent = '–';
+    ringLabel.textContent = '';
+    ringFg.classList.remove('urgent');
+    ringFg.style.transition = 'none';
+    ringFg.style.strokeDashoffset = 0;
+    captionText.textContent = '…';
+    statusLine.textContent = '播放題目中…';
 
-            // 啟用回饋面板
-            document.getElementById('currentScoreDisplay').innerText = currentScore;
-            document.getElementById('feedbackPanel').classList.add('active');
-        }
+    await new Promise(r => setTimeout(r, 250));
+    qText.classList.add('shown');
 
-        // === 4. UI 互動與視覺更新 ===
+    await speak(q.text);
 
-        function displayResult(prob) {
-            document.getElementById('resultPlaceholder').style.display = 'none';
-            document.getElementById('resultOutput').style.display = 'block';
-            
-            const predText = document.getElementById('predPercentage');
-            const icon = document.getElementById('predIcon');
-            const comment = document.getElementById('predComment');
+    statusLine.textContent = '作答中，請開始說話';
+    ringLabel.textContent = '秒';
 
-            predText.innerText = `預估被罵機率：${prob}%`;
+    const startTime = performance.now();
+    let reactionMs = null;
+    let liveTranscript = '';
 
-            // 根據機率改變樣式與評語
-            if (prob >= 80) {
-                predText.style.color = 'var(--btn-red)';
-                icon.innerText = '🌋🤬';
-                comment.innerText = '評語：塊陶啊！大難臨頭！';
-            } else if (prob >= 50) {
-                predText.style.color = 'var(--accent-orange)';
-                icon.innerText = '😰⚠️';
-                comment.innerText = '評語：危險邊緣，建議先去洗碗陪笑臉。';
-            } else if (prob >= 20) {
-                predText.style.color = '#ffeb3b';
-                icon.innerText = '😐💧';
-                comment.innerText = '評語：有一點點危險，記得察言觀色。';
-            } else {
-                predText.style.color = 'var(--btn-green)';
-                icon.innerText = '😎✨';
-                comment.innerText = '評語：穩如泰山！今天可以橫著走。';
-            }
-        }
+    const recognition = new SpeechRecognitionCtor();
+    recognition.lang = 'en-US';
+    recognition.continuous = true;
+    recognition.interimResults = true;
 
-        function updateStatus(message) {
-            document.getElementById('statusBar').innerText = message;
-        }
+    recognition.onresult = (event) => {
+      if (reactionMs === null) reactionMs = Math.round(performance.now() - startTime);
+      let combined = '';
+      for (let i = 0; i < event.results.length; i++) {
+        combined += event.results[i][0].transcript + ' ';
+      }
+      liveTranscript = combined.trim();
+      captionText.textContent = liveTranscript || '…';
+    };
+    recognition.onerror = () => {};
+    try { recognition.start(); } catch (e) {}
 
-        // === 5. 資料管理 (CRUD, LocalStorage) ===
+    // countdown ring
+    requestAnimationFrame(() => {
+      ringFg.style.transition = `stroke-dashoffset ${q.seconds}s linear`;
+      ringFg.style.strokeDashoffset = CIRC;
+    });
 
-        function submitFeedback(label) {
-            if (currentScore === null) return;
+    let remaining = q.seconds;
+    ringNum.textContent = remaining;
+    const tick = setInterval(() => {
+      remaining -= 1;
+      ringNum.textContent = Math.max(remaining, 0);
+      if (remaining <= 3) ringFg.classList.add('urgent');
+      if (remaining <= 0) {
+        clearInterval(tick);
+      }
+    }, 1000);
 
-            const record = {
-                id: Date.now(),
-                date: new Date().toISOString().split('T')[0],
-                score: currentScore,
-                label: label // 1 標示 Y(被罵), 0 標示 N(安全)
-            };
+    setTimeout(() => {
+      clearInterval(tick);
+      try { recognition.stop(); } catch (e) {}
+      statusLine.textContent = '時間到';
+      results.push({
+        question: q.text,
+        seconds: q.seconds,
+        transcript: liveTranscript,
+        reactionMs: reactionMs,
+      });
+      setTimeout(resolve, 500);
+    }, q.seconds * 1000);
+  });
+}
 
-            historyData.unshift(record); // 加到陣列最前面
-            saveHistory();
-            renderTable();
-            
-            // 重置回饋區塊
-            document.getElementById('feedbackPanel').classList.remove('active');
-            currentScore = null;
-            document.getElementById('currentScoreDisplay').innerText = '--';
+async function analyzeAll() {
+  analyzingScreen.style.display = 'block';
 
-            // 每次新增資料後重新訓練模型
-            trainModel();
-        }
+  const payload = results.map((r, i) => ({
+    index: i + 1,
+    question: r.question,
+    time_limit_seconds: r.seconds,
+    transcript: r.transcript || '(沒有偵測到語音)',
+    reaction_ms: r.reactionMs,
+  }));
 
-        function deleteRecord(id) {
-            historyData = historyData.filter(d => d.id !== id);
-            saveHistory();
-            renderTable();
-            trainModel(); // 刪除資料後重新訓練模型
-        }
+  const systemPrompt = `你是英文口說考試（全民英檢中級 第二部分問答）的評分老師。
+使用者會給你 10 題的題目、時限、學生的口說逐字稿（由瀏覽器語音辨識產生，可能有辨識誤差）、以及反應時間（從題目唸完到開始說話的毫秒數）。
 
-        function saveHistory() {
-            localStorage.setItem('scolding_history', JSON.stringify(historyData));
-        }
+請針對每一題給出：
+1. corrected：把學生的回答改成文法正確、道地的版本（若原答案已經很好可以只做小幅修飾）
+2. comment：用繁體中文寫 1-2 句具體回饋，指出文法或用詞問題，或稱讚做得好的地方
+3. grammar_score：1-5 分（5 分代表文法完全正確）
 
-        function loadHistory() {
-            const saved = localStorage.getItem('scolding_history');
-            if (saved) {
-                try {
-                    historyData = JSON.parse(saved);
-                } catch (e) {
-                    console.error("資料解析失敗", e);
-                    historyData = [];
-                }
-            }
-        }
+並給出整體總評 overall：
+- summary：用繁體中文寫 3-4 句話總結整體表現
+- strengths：陣列，1-3 個具體優點
+- weaknesses：陣列，1-3 個具體待加強之處
+- reaction_comment：針對反應時間的整體評語（前5題與後5題可分開提及）
+- scores：{ grammar: 1-5, fluency: 1-5, content: 1-5, reaction: 1-5 } 四個 1-5 分的整體指標分數
 
-        function renderTable() {
-            const tbody = document.querySelector('#historyTable tbody');
-            tbody.innerHTML = '';
-            
-            if (historyData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="color:#888;">尚無歷史紀錄</td></tr>';
-                return;
-            }
+注意：語音辨識逐字稿可能漏字或誤判，評分時可合理推測學生原意，不要因辨識瑕疵過度扣分。
 
-            historyData.forEach(item => {
-                const tr = document.createElement('tr');
-                const resultText = item.label === 1 ? '<span style="color:var(--btn-red)">Y</span>' : '<span style="color:var(--btn-green)">N</span>';
-                
-                tr.innerHTML = `
-                    <td>${item.date}</td>
-                    <td>${item.score}</td>
-                    <td>${resultText}</td>
-                    <td><button class="btn-delete" onclick="deleteRecord(${item.id})">刪除</button></td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
+只回傳一個 JSON 物件，格式如下，不要有任何其他文字或 markdown 標記：
+{
+  "per_question": [ { "index": 1, "corrected": "...", "comment": "...", "grammar_score": 4 }, ... 共10筆 ],
+  "overall": { "summary": "...", "strengths": ["..."], "weaknesses": ["..."], "reaction_comment": "...", "scores": { "grammar": 4, "fluency": 3, "content": 4, "reaction": 3 } }
+}`;
 
-        // === 6. 資料匯出與匯入 ===
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 3000,
+        system: systemPrompt,
+        messages: [
+          { role: "user", content: JSON.stringify(payload) }
+        ],
+      })
+    });
+    const data = await response.json();
+    const textBlock = (data.content || []).find(b => b.type === 'text');
+    let raw = textBlock ? textBlock.text : '{}';
+    raw = raw.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(raw);
+    renderResults(parsed);
+  } catch (e) {
+    analyzingScreen.style.display = 'none';
+    showResultsError();
+  }
+}
 
-        function exportData() {
-            if (historyData.length === 0) {
-                alert("目前沒有資料可以匯出。");
-                return;
-            }
-            const dataStr = JSON.stringify(historyData, null, 2);
-            const blob = new Blob([dataStr], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `scolding_history_${new Date().toISOString().split('T')[0]}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
+function showResultsError() {
+  resultsScreen.style.display = 'flex';
+  document.getElementById('summaryText').textContent = '分析時發生錯誤，請稍後再試一次。你仍然可以在下方看到各題的逐字稿。';
+  const wrap = document.getElementById('qCardsWrap');
+  wrap.innerHTML = '';
+  results.forEach((r, i) => {
+    wrap.appendChild(buildQCard(i, r, null));
+  });
+}
 
-        function importData(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+function buildQCard(i, r, fb) {
+  const card = document.createElement('div');
+  card.className = 'q-card';
+  const reactionText = r.reactionMs !== null ? `反應時間：${(r.reactionMs / 1000).toFixed(1)} 秒` : '反應時間：未偵測到語音';
+  card.innerHTML = `
+    <div class="num">第 ${i + 1} 題 · ${r.seconds} 秒</div>
+    <div class="qtext">${escapeHtml(r.question)}</div>
+    <div class="field-label">你的回答</div>
+    <div class="your-answer">${escapeHtml(r.transcript || '（沒有偵測到語音）')}</div>
+    ${fb ? `
+      <div class="field-label">建議修正</div>
+      <div class="your-answer" style="color: var(--sage);">${escapeHtml(fb.corrected || '')}</div>
+      <div class="feedback">${escapeHtml(fb.comment || '')}</div>
+    ` : ''}
+    <div class="reaction">${reactionText}</div>
+  `;
+  return card;
+}
 
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const importedData = JSON.parse(e.target.result);
-                    if (Array.isArray(importedData)) {
-                        // 合併資料並去重（簡單防呆）
-                        historyData = [...importedData];
-                        saveHistory();
-                        renderTable();
-                        trainModel(); // 匯入後重新訓練
-                        alert("資料匯入成功！");
-                    } else {
-                        alert("匯入失敗：JSON 格式不正確。");
-                    }
-                } catch (error) {
-                    alert("檔案讀取失敗，請確認是否為正確的 JSON 檔。");
-                }
-            };
-            reader.readAsText(file);
-            // 清空 input 讓同一個檔案可以重複選取
-            event.target.value = '';
-        }
-    </script>
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function metricRow(label, score) {
+  const row = document.createElement('div');
+  row.className = 'metric-row';
+  row.innerHTML = `
+    <div class="metric-label"><span>${label}</span><span>${score}/5</span></div>
+    <div class="metric-bar-bg"><div class="metric-bar-fg" style="width:${score * 20}%;"></div></div>
+  `;
+  return row;
+}
+
+function renderResults(parsed) {
+  analyzingScreen.style.display = 'none';
+  resultsScreen.style.display = 'flex';
+
+  const overall = parsed.overall || {};
+  document.getElementById('summaryText').textContent = overall.summary || '（沒有取得總評）';
+
+  const metricWrap = document.getElementById('metricRows');
+  metricWrap.innerHTML = '';
+  const scores = overall.scores || {};
+  metricWrap.appendChild(metricRow('文法', scores.grammar || 0));
+  metricWrap.appendChild(metricRow('流暢度', scores.fluency || 0));
+  metricWrap.appendChild(metricRow('內容完整度', scores.content || 0));
+  metricWrap.appendChild(metricRow('反應速度', scores.reaction || 0));
+
+  if (overall.reaction_comment) {
+    const p = document.createElement('p');
+    p.className = 'summary-text';
+    p.style.marginTop = '12px';
+    p.textContent = '⏱ ' + overall.reaction_comment;
+    document.querySelector('.summary-card').appendChild(p);
+  }
+
+  const wrap = document.getElementById('qCardsWrap');
+  wrap.innerHTML = '';
+  const perQ = parsed.per_question || [];
+  results.forEach((r, i) => {
+    const fb = perQ.find(p => p.index === i + 1);
+    wrap.appendChild(buildQCard(i, r, fb));
+  });
+}
+
+startBtn.addEventListener('click', () => {
+  startBtn.disabled = true;
+  startBtn.textContent = '準備中…';
+  runExam().finally(() => {
+    startBtn.disabled = false;
+    startBtn.textContent = '開始測驗';
+  });
+});
+
+restartBtn.addEventListener('click', () => {
+  resultsScreen.style.display = 'none';
+  introScreen.style.display = 'block';
+});
+</script>
 </body>
 </html>
