@@ -215,6 +215,21 @@
     color: var(--text-dim);
   }
   .caption-box .live { color: var(--text); }
+  .rec-dot {
+    display: inline-block;
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: var(--brick);
+    margin-right: 8px;
+    animation: pulse 1.1s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+  audio.answer-audio {
+    width: 100%;
+    height: 34px;
+    margin-bottom: 10px;
+  }
 
   /* ---------- Results screen ---------- */
   .results-screen { display: none; flex-direction: column; }
@@ -347,7 +362,9 @@
     </div>
 
     <div class="status-line" id="statusLine"></div>
-    <div class="caption-box"><span class="live" id="captionText">…</span></div>
+    <div class="caption-box" id="captionBox">
+      <span class="live" id="captionText">🎙 準備中…</span>
+    </div>
   </div>
 
   <!-- ANALYZING -->
@@ -404,7 +421,8 @@ ringFg.style.strokeDasharray = CIRC;
 
 const SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-let results = []; // { question, seconds, transcript, reactionMs }
+let results = []; // { question, seconds, transcript, reactionMs, audioUrl }
+let micStream = null;
 
 function showError(msg) {
   errorBox.style.display = 'block';
@@ -444,7 +462,7 @@ async function runExam() {
   }
 
   try {
-    await navigator.mediaDevices.getUserMedia({ audio: true });
+    micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
   } catch (e) {
     showError('無法取得麥克風權限，請允許瀏覽器存取麥克風後再重新整理頁面。');
     return;
@@ -463,6 +481,9 @@ async function runExam() {
   }
 
   qScreen.style.display = 'none';
+  if (micStream) {
+    micStream.getTracks().forEach(t => t.stop());
+  }
   await analyzeAll();
 }
 
@@ -476,7 +497,7 @@ function runQuestion(index, q) {
     ringFg.classList.remove('urgent');
     ringFg.style.transition = 'none';
     ringFg.style.strokeDashoffset = 0;
-    captionText.textContent = '…';
+    captionText.innerHTML = '<span class="rec-dot"></span>錄音中…';
     statusLine.textContent = '播放題目中…';
 
     await new Promise(r => setTimeout(r, 250));
@@ -489,24 +510,49 @@ function runQuestion(index, q) {
 
     const startTime = performance.now();
     let reactionMs = null;
-    let liveTranscript = '';
+    let finalTranscript = '';
+    let questionActive = true;
+    let currentRecognition = null;
 
-    const recognition = new SpeechRecognitionCtor();
-    recognition.lang = 'en-US';
-    recognition.continuous = true;
-    recognition.interimResults = true;
+    function startRecognitionSession() {
+      if (!questionActive) return;
+      const rec = new SpeechRecognitionCtor();
+      rec.lang = 'en-US';
+      rec.continuous = true;
+      rec.interimResults = true;
 
-    recognition.onresult = (event) => {
-      if (reactionMs === null) reactionMs = Math.round(performance.now() - startTime);
-      let combined = '';
-      for (let i = 0; i < event.results.length; i++) {
-        combined += event.results[i][0].transcript + ' ';
-      }
-      liveTranscript = combined.trim();
-      captionText.textContent = liveTranscript || '…';
-    };
-    recognition.onerror = () => {};
-    try { recognition.start(); } catch (e) {}
+      rec.onresult = (event) => {
+        if (reactionMs === null) reactionMs = Math.round(performance.now() - startTime);
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const res = event.results[i];
+          if (res.isFinal) {
+            finalTranscript += res[0].transcript + ' ';
+          }
+        }
+      };
+      rec.onerror = () => {};
+      rec.onend = () => {
+        // Chrome stops recognition after brief silence, or the instance can
+        // get stuck after several restarts — spin up a brand new instance
+        // each time rather than reusing this one, as long as the question
+        // is still running
+        if (questionActive) startRecognitionSession();
+      };
+      try { rec.start(); } catch (e) {}
+      currentRecognition = rec;
+    }
+    startRecognitionSession();
+
+    // record the actual audio too, so the results screen can play it back
+    // alongside the transcript
+    let audioChunks = [];
+    let mediaRecorder = null;
+    let audioUrl = null;
+    try {
+      mediaRecorder = new MediaRecorder(micStream);
+      mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) audioChunks.push(e.data); };
+      mediaRecorder.start();
+    } catch (e) {}
 
     // countdown ring
     requestAnimationFrame(() => {
@@ -527,15 +573,36 @@ function runQuestion(index, q) {
 
     setTimeout(() => {
       clearInterval(tick);
-      try { recognition.stop(); } catch (e) {}
+      questionActive = false;
+      try { if (currentRecognition) currentRecognition.stop(); } catch (e) {}
       statusLine.textContent = '時間到';
-      results.push({
-        question: q.text,
-        seconds: q.seconds,
-        transcript: liveTranscript,
-        reactionMs: reactionMs,
-      });
-      setTimeout(resolve, 500);
+
+      const finish = () => {
+        const cleanTranscript = finalTranscript.trim();
+        captionText.textContent = cleanTranscript
+          ? '已收到：' + cleanTranscript
+          : '（沒有偵測到語音）';
+        results.push({
+          question: q.text,
+          seconds: q.seconds,
+          transcript: cleanTranscript,
+          reactionMs: reactionMs,
+          audioUrl: audioUrl,
+        });
+        setTimeout(resolve, 900);
+      };
+
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.onstop = () => {
+          if (audioChunks.length) {
+            audioUrl = URL.createObjectURL(new Blob(audioChunks, { type: 'audio/webm' }));
+          }
+          finish();
+        };
+        try { mediaRecorder.stop(); } catch (e) { finish(); }
+      } else {
+        finish();
+      }
     }, q.seconds * 1000);
   });
 }
@@ -613,10 +680,12 @@ function buildQCard(i, r, fb) {
   const card = document.createElement('div');
   card.className = 'q-card';
   const reactionText = r.reactionMs !== null ? `反應時間：${(r.reactionMs / 1000).toFixed(1)} 秒` : '反應時間：未偵測到語音';
+  const audioHtml = r.audioUrl ? `<audio class="answer-audio" controls src="${r.audioUrl}"></audio>` : '';
   card.innerHTML = `
     <div class="num">第 ${i + 1} 題 · ${r.seconds} 秒</div>
     <div class="qtext">${escapeHtml(r.question)}</div>
-    <div class="field-label">你的回答</div>
+    ${audioHtml}
+    <div class="field-label">逐字稿</div>
     <div class="your-answer">${escapeHtml(r.transcript || '（沒有偵測到語音）')}</div>
     ${fb ? `
       <div class="field-label">建議修正</div>
