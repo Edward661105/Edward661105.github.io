@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>隱私權政策 (Privacy Policy) — 數學鍵盤 (MathKeyboard)</title>
+  <style>
+    :root {
+      --bg: #16171a;
+      --card: #1e1f22;
+      --border: #2e3035;
+      --accent: #5865f2;
+      --text: #f2f3f5;
+      --muted: #b5bac1;
+      --badge-bg: rgba(88, 101, 242, 0.15);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 32px 16px 64px;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
+      line-height: 1.7;
+    }
+    .container { max-width: 820px; margin: 0 auto; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 32px;
+      margin-bottom: 24px;
+    }
+    .badge {
+      display: inline-block;
+      background: var(--badge-bg);
+      color: #8ea1e1;
+      border: 1px solid rgba(88, 101, 242, 0.4);
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    h1 { margin: 0 0 12px; font-size: 1.75rem; }
+    h2 {
+      margin-top: 0;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      font-size: 1.35rem;
+      color: #ffffff;
+    }
+    h3 { margin-top: 22px; margin-bottom: 8px; font-size: 1.08rem; color: #dce0ff; }
+    .meta, p, li { color: var(--muted); }
+    strong { color: var(--text); }
+    code {
+      background: #2b2d31;
+      color: #e3e5e8;
+      padding: 2px 6px;
+      border-radius: 5px;
+      font-size: 0.9em;
+    }
+    ul, ol { padding-left: 22px; }
+    li { margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <span class="badge">100% 離線運作 · 零網路權限 · 零資料收集</span>
+      <h1>隱私權政策 (Privacy Policy)<br>數學鍵盤 (MathKeyboard)</h1>
+      <div class="meta">
+        生效日期 (Effective Date)：2026 年 10 月 22 日<br>
+        應用程式名稱 (App Name)：數學鍵盤 (MathKeyboard)<br>
+        套件名稱 (Package Name)：<code>com.edwardma.mathkeyboard</code><br>
+        開發者 (Developer)：Edward Ma
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🇹🇼 繁體中文版</h2>
+
+      <h3>1. 核心承諾：100% 離線運作，零資料收集</h3>
+      <p><strong>數學鍵盤 (MathKeyboard)</strong> 是一款完全在您的裝置本地端離線運作的 Android 輸入法工具。我們高度重視您的個人隱私與資訊安全：</p>
+      <ul>
+        <li><strong>無網路權限</strong>：本應用程式在系統清單（<code>AndroidManifest.xml</code>）中<strong>未要求任何網路連線權限（無 <code>android.permission.INTERNET</code>）</strong>，因此在技術上完全無法將您的任何資料傳送至外部伺服器。</li>
+        <li><strong>不收集任何個人或敏感資料</strong>：我們不會收集、儲存、監控、分析或分享您輸入的任何文字、數學公式、密碼、個人身分資訊或裝置識別碼。</li>
+        <li><strong>無第三方追蹤或廣告 SDK</strong>：本應用程式不包含任何第三方廣告、數據分析（Analytics）或追蹤套件。</li>
+      </ul>
+
+      <h3>2. 關於 Android 系統啟用輸入法時的預設警告</h3>
+      <p>當您在 Android 系統設定中啟用任何第三方輸入法時，Android 系統皆會顯示標準安全性提醒（<em>「這個輸入法可能會收集您輸入的所有文字…」</em>）。這是 Android 作業系統對所有鍵盤類 App 的統一固定提示。由於 <strong>MathKeyboard 具備零連網權限設計</strong>，您輸入的所有內容絕對不會離開您的手機。</p>
+
+      <h3>3. 本地端資料處理說明</h3>
+      <p>為了提供流暢的輸入體驗，本應用程式僅在您的裝置本機端處理或儲存以下非敏感設定資料：</p>
+      <ol>
+        <li><strong>L3 語境感知公式預測 (<code>MathPredictor</code>)</strong>：當您打字時，鍵盤會在裝置記憶體（RAM）中即時分析游標前的當前算式內容，以推算下一個數學符號或積分微分項（如 <code>dx</code>、<code>dt</code>、<code>dθ</code>）。此分析過程僅在記憶體中瞬間完成，不會寫入任何檔案，也不會留存歷史輸入紀錄。</li>
+        <li><strong>最近使用符號 (<code>recent</code>)</strong>：您點選過的常用數學符號會儲存在手機內部的 <code>SharedPreferences</code>（僅限本 App 沙盒存取），用於在「最近」分類中快速顯示。</li>
+        <li><strong>離線手寫符號搜尋與自適應學習 (<code>HandwritingSearch</code>)</strong>：當您使用「✍️ 手寫」功能時，筆畫軌跡僅在手機本地端進行幾何特徵比對；自適應學習的筆畫原型向量僅儲存於本機 <code>SharedPreferences</code> 中，不會上傳至任何雲端。</li>
+      </ol>
+      <p>您隨時可以透過 Android 系統設定中的「應用程式資訊 → 儲存空間 → 清除資料」或解除安裝本應用程式，一鍵徹底刪除上述所有本機端紀錄。</p>
+
+      <h3>4. 兒童隱私保護</h3>
+      <p>本應用程式適合所有年齡層（包含學生與教育用途）使用，且不會向任何使用者（包含 13 歲以下兒童）收集任何個人資訊。</p>
+
+      <h3>5. 隱私權政策之變更</h3>
+      <p>若未來版本功能有所調整而需更新本政策，我們將於本頁面公布最新版本並更新生效日期。</p>
+    </div>
+
+    <div class="card">
+      <h2>🌐 English Version</h2>
+
+      <h3>1. Core Commitment: 100% Offline &amp; Zero Data Collection</h3>
+      <p><strong>MathKeyboard</strong> is a fully offline Android Input Method Editor (IME) designed for typing mathematical symbols and formulas. We are committed to protecting your privacy:</p>
+      <ul>
+        <li><strong>No Internet Permission</strong>: MathKeyboard <strong>does NOT request <code>android.permission.INTERNET</code></strong> or any other network permissions in its <code>AndroidManifest.xml</code>. It is technically impossible for the app to transmit any typed text or user data off your device.</li>
+        <li><strong>No Personal or Sensitive Data Collection</strong>: We do not collect, log, store, transmit, or share any keystrokes, mathematical expressions, passwords, personal information, or device identifiers.</li>
+        <li><strong>No Third-Party SDKs or Ads</strong>: The app contains zero third-party analytics, tracking, or advertising SDKs.</li>
+      </ul>
+
+      <h3>2. About the Standard Android System Keyboard Warning</h3>
+      <p>When enabling any third-party keyboard on Android, the operating system displays a standard system warning stating that the input method <em>"may be able to collect all the text you type."</em> This is a mandatory OS-level message shown for all keyboard apps. Because <strong>MathKeyboard has no internet permission</strong>, nothing you type can ever leave your device.</p>
+
+      <h3>3. On-Device Data Processing &amp; Local Storage</h3>
+      <p>To provide intelligent math input features, MathKeyboard processes the following data strictly locally on your device:</p>
+      <ol>
+        <li><strong>L3 Context-Aware Math Prediction (<code>MathPredictor</code>)</strong>: The keyboard inspects the text immediately preceding the cursor in volatile memory (RAM) solely to suggest relevant mathematical symbols and differentials (e.g., <code>dx</code>, <code>dt</code>, <code>dθ</code>). This context is never logged or persisted to disk.</li>
+        <li><strong>Recently Used Symbols (<code>recent</code>)</strong>: Recently tapped math symbols are stored locally in Android <code>SharedPreferences</code> within the app's private sandbox to populate the "Recent" tab.</li>
+        <li><strong>Offline Handwriting Recognition (<code>HandwritingSearch</code>)</strong>: Handwritten strokes are matched against geometric symbol templates entirely on-device. Learned stroke feature vectors are saved locally in private <code>SharedPreferences</code> to improve recognition accuracy over time.</li>
+      </ol>
+      <p>You can erase all locally stored preferences at any time by clearing the app's storage in Android Settings or uninstalling the application.</p>
+
+      <h3>4. Children's Privacy</h3>
+      <p>MathKeyboard is safe for users of all ages, including students, and does not collect personal data from anyone, including children under the age of 13.</p>
+
+      <h3>5. Changes to This Privacy Policy</h3>
+      <p>Any updates to this Privacy Policy will be posted on this page with an updated effective date.</p>
+    </div>
+  </div>
+</body>
+</html>
