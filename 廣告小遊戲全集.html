@@ -1,0 +1,4217 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>假廣告遊戲大合集 — Fake Ad Arcade</title>
+    <style>
+:root {
+    --bg-dark: #0f172a;
+    --card-bg: #1e293b;
+    --accent: #f59e0b;
+    --accent-glow: rgba(245, 158, 11, 0.35);
+    --primary: #3b82f6;
+    --success: #10b981;
+    --danger: #ef4444;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at top, #1e293b 0%, #090d16 100%);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Microsoft JhengHei", sans-serif;
+    color: var(--text-main);
+    overflow: hidden;
+    touch-action: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#app-shell {
+    width: 100%;
+    max-width: 440px;
+    height: 100%;
+    max-height: 860px;
+    background: #111827;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.75), 0 0 0 2px rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+}
+
+@media (min-width: 500px) and (min-height: 760px) {
+    #app-shell {
+        height: 94vh;
+        border-radius: 28px;
+        border: 4px solid #334155;
+    }
+}
+
+/* Header */
+#top-bar {
+    height: 54px;
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+    z-index: 20;
+    flex-shrink: 0;
+}
+
+.top-left, .top-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.icon-btn {
+    background: #334155;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.12s, background 0.15s;
+}
+
+.icon-btn:hover {
+    background: #475569;
+}
+
+.icon-btn:active {
+    transform: scale(0.92);
+}
+
+#header-title {
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    background: linear-gradient(90deg, #fde047, #f59e0b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* Meme Ticker */
+#meme-ticker {
+    height: 28px;
+    background: linear-gradient(90deg, #b91c1c, #d97706, #b91c1c);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    white-space: nowrap;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+#ticker-track {
+    display: inline-block;
+    padding-left: 100%;
+    animation: marquee 18s linear infinite;
+}
+
+@keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+}
+
+/* Main Menu */
+#menu-view {
+    flex: 1;
+    padding: 14px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.menu-banner {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    border-radius: 16px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.menu-banner-text h2 {
+    font-size: 17px;
+    font-weight: 900;
+    color: #fff;
+    margin-bottom: 4px;
+}
+
+.menu-banner-text p {
+    font-size: 12px;
+    color: #e0e7ff;
+}
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    flex: 1;
+}
+
+.game-card {
+    background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+    border: 2px solid #334155;
+    border-radius: 16px;
+    padding: 14px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
+}
+
+.game-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent);
+    box-shadow: 0 10px 22px var(--accent-glow);
+}
+
+.game-card:active {
+    transform: scale(0.96);
+}
+
+.card-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 99px;
+    letter-spacing: 0.3px;
+}
+
+.card-icon {
+    font-size: 44px;
+    margin-bottom: 8px;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4));
+}
+
+.card-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 3px;
+}
+
+.card-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+/* Game View */
+#game-view {
+    flex: 1;
+    display: none;
+    flex-direction: column;
+    position: relative;
+    background: #0f172a;
+    overflow: hidden;
+}
+
+#game-subbar {
+    height: 40px;
+    background: #1e293b;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+    flex-shrink: 0;
+}
+
+.level-pills {
+    display: flex;
+    gap: 6px;
+}
+
+.lvl-pill {
+    background: #334155;
+    color: #cbd5e1;
+    border: none;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.lvl-pill.active {
+    background: var(--accent);
+    color: #0f172a;
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.ad-meme-btn {
+    background: linear-gradient(90deg, #ef4444, #f97316);
+    color: #fff;
+    border: 1px solid #fde047;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    animation: pulse-btn 1.2s infinite;
+}
+
+@keyframes pulse-btn {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.06); }
+}
+
+#canvas-wrap {
+    flex: 1;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #090d16;
+    overflow: hidden;
+}
+
+#game-canvas {
+    width: 100%;
+    height: 100%;
+    max-width: 420px;
+    max-height: 620px;
+    display: block;
+    touch-action: none;
+}
+
+/* Google AdMob Mock Banner */
+#admob-banner {
+    height: 52px;
+    background: #ffffff;
+    color: #1e293b;
+    border-top: 2px solid #cbd5e1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 15;
+}
+
+.ad-tag {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #f59e0b;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 800;
+    padding: 1px 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.ad-banner-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-left: 14px;
+}
+
+.ad-banner-icon {
+    width: 34px;
+    height: 34px;
+    background: #eff6ff;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    border: 1px solid #bfdbfe;
+}
+
+.ad-banner-copy h4 {
+    font-size: 12px;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.ad-banner-copy p {
+    font-size: 10px;
+    color: #64748b;
+}
+
+.ad-banner-cta {
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* Modals */
+.modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(9, 13, 22, 0.85);
+    backdrop-filter: blur(5px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    padding: 20px;
+}
+
+.modal-overlay.show {
+    display: flex;
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.modal-card {
+    width: 100%;
+    max-width: 340px;
+    background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 22px;
+    padding: 24px 20px;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+    position: relative;
+}
+
+.modal-emoji {
+    font-size: 64px;
+    margin-bottom: 10px;
+    filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.4));
+}
+
+.modal-title {
+    font-size: 24px;
+    font-weight: 900;
+    margin-bottom: 8px;
+}
+
+.modal-desc {
+    font-size: 14px;
+    color: #cbd5e1;
+    margin-bottom: 20px;
+    line-height: 1.45;
+}
+
+.modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btn-primary, .btn-warning, .btn-ghost {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 800;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.12s, filter 0.15s;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: #0f172a;
+    box-shadow: 0 6px 16px rgba(245, 158, 11, 0.35);
+}
+
+.btn-ghost {
+    background: #334155;
+    color: #e2e8f0;
+}
+
+.btn-primary:active, .btn-warning:active, .btn-ghost:active {
+    transform: scale(0.96);
+}
+
+/* Satirical Fake Rewarded Ad Modal */
+.fake-ad-box {
+    width: 100%;
+    max-width: 350px;
+    background: linear-gradient(180deg, #bae6fd 0%, #e0f2fe 100%);
+    color: #0f172a;
+    border: 4px solid #0284c7;
+    border-radius: 22px;
+    padding: 22px 18px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+}
+
+#fake-ad-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(15, 23, 42, 0.75);
+    color: #fff;
+    font-weight: 900;
+    font-size: 14px;
+    border: 2px solid #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.18s ease-out;
+    z-index: 10;
+}
+
+.fake-ad-timer {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(15, 23, 42, 0.75);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 99px;
+}
+
+.fake-ad-scene {
+    background: #0f172a;
+    border-radius: 14px;
+    padding: 18px 10px;
+    margin: 22px 0 14px;
+    color: #fff;
+    position: relative;
+}
+
+.fake-ad-choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.fake-choice-btn {
+    background: #fff;
+    border: 2px solid #0284c7;
+    border-radius: 12px;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: 800;
+    color: #0f172a;
+    cursor: pointer;
+    transition: transform 0.12s, background 0.15s;
+}
+
+.fake-choice-btn:hover {
+    background: #fef08a;
+}
+
+</style>
+</head>
+<body>
+    <div id="app-shell">
+        <!-- Top Navigation Bar -->
+        <header id="top-bar">
+            <div class="top-left">
+                <button id="btn-home" class="icon-btn" title="回主選單">🏠</button>
+                <button id="btn-reset" class="icon-btn" title="重開本關" style="display:none;">🔄</button>
+            </div>
+            <h1 id="header-title">🎮 假廣告遊戲合集</h1>
+            <div class="top-right">
+                <button id="btn-sound" class="icon-btn" title="音效開關">🔊</button>
+            </div>
+        </header>
+
+        <!-- Satirical Fake Ad Ticker -->
+        <div id="meme-ticker">
+            <div id="ticker-track">
+                🔥 只有 0.01% 的天才才能破關！ &nbsp;&nbsp;|&nbsp;&nbsp; 🤯 玩了 500 次還是救不到狗頭！ &nbsp;&nbsp;|&nbsp;&nbsp; 🥶 暴風雪破屋裡的母女需要你的幫忙... &nbsp;&nbsp;|&nbsp;&nbsp; ⚔️ 為什麼廣告主角永遠要去打 Lv.999 魔王自殺？！
+            </div>
+        </div>
+
+        <!-- Main Menu View -->
+        <main id="menu-view">
+            <div class="menu-banner">
+                <div class="menu-banner-text">
+                    <h2>🔥 6 大經典「假廣告」真玩版！</h2>
+                    <p>每款皆含 3 個精心設計關卡 + 「🤡 廣告弱智操作」按鈕</p>
+                </div>
+                <div style="font-size:36px;">📺</div>
+            </div>
+
+            <div class="menu-grid">
+                <div class="game-card" data-game="1">
+                    <span class="card-badge">經典必玩</span>
+                    <div class="card-icon">📍</div>
+                    <div class="card-title">拔針救人</div>
+                    <div class="card-sub">熔岩・毒氣・哥布林與寶藏</div>
+                </div>
+
+                <div class="game-card" data-game="2">
+                    <span class="card-badge">智商180</span>
+                    <div class="card-icon">🏰</div>
+                    <div class="card-title">算術爬塔</div>
+                    <div class="card-sub">比大小吸收戰力討伐魔龍</div>
+                </div>
+
+                <div class="game-card" data-game="3">
+                    <span class="card-badge">爽快倍增</span>
+                    <div class="card-icon">🏃‍♂️</div>
+                    <div class="card-title">人數倍增跑酷</div>
+                    <div class="card-sub">穿越 ×2 大門集結大軍</div>
+                </div>
+
+                <div class="game-card" data-game="4">
+                    <span class="card-badge">物理畫線</span>
+                    <div class="card-icon">🐕</div>
+                    <div class="card-title">畫線救狗頭</div>
+                    <div class="card-sub">一筆畫防護罩擋住蜜蜂 6 秒</div>
+                </div>
+
+                <div class="game-card" data-game="5">
+                    <span class="card-badge">極度上癮</span>
+                    <div class="card-icon">🔩</div>
+                    <div class="card-title">螺絲拆解</div>
+                    <div class="card-sub">分色裝盒卸除多層鐵板</div>
+                </div>
+
+                <div class="game-card" data-game="6">
+                    <span class="card-badge">強迫症舒壓</span>
+                    <div class="card-icon">🔫</div>
+                    <div class="card-title">滿足系清潔</div>
+                    <div class="card-sub">高壓水槍沖洗泥垢重現光芒</div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Active Game View -->
+        <section id="game-view">
+            <div id="game-subbar">
+                <div class="level-pills">
+                    <button class="lvl-pill active" data-lvl="1">第 1 關</button>
+                    <button class="lvl-pill" data-lvl="2">第 2 關</button>
+                    <button class="lvl-pill" data-lvl="3">第 3 關</button>
+                </div>
+                <button id="btn-stupid-ad" class="ad-meme-btn">🤡 廣告弱智操作</button>
+            </div>
+
+            <div id="canvas-wrap">
+                <canvas id="game-canvas" width="420" height="600"></canvas>
+            </div>
+        </section>
+
+        <!-- Simulated Google AdMob Bottom Banner -->
+        <footer id="admob-banner">
+            <span class="ad-tag">Ad · Google AdMob</span>
+            <div class="ad-banner-left">
+                <div class="ad-banner-icon">❄️</div>
+                <div class="ad-banner-copy">
+                    <h4>極地破屋求生記：救救母女！</h4>
+                    <p>99% 的人都選錯！你能在暴風雪中生火嗎？</p>
+                </div>
+            </div>
+            <button id="btn-banner-ad" class="ad-banner-cta">立即試玩</button>
+        </footer>
+
+        <!-- Win Modal -->
+        <div id="win-modal" class="modal-overlay">
+            <div class="modal-card">
+                <div class="modal-emoji">🏆</div>
+                <h2 class="modal-title" style="color:#fde047;">挑戰成功！</h2>
+                <p id="win-desc" class="modal-desc">你的智商高達 180！終於不用再看廣告主耍笨了！</p>
+                <div class="modal-actions">
+                    <button id="btn-win-next" class="btn-primary">挑戰下一關 ➡️</button>
+                    <button id="btn-win-menu" class="btn-ghost">回主選單</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fail Modal -->
+        <div id="fail-modal" class="modal-overlay">
+            <div class="modal-card">
+                <div class="modal-emoji">💀</div>
+                <h2 class="modal-title" style="color:#ef4444;">挑戰失敗！</h2>
+                <p id="fail-desc" class="modal-desc">連這都過不了？難怪廣告裡的人一直失敗！</p>
+                <div class="modal-actions">
+                    <button id="btn-fail-retry" class="btn-primary">🔄 立即重試本關</button>
+                    <button id="btn-fail-ad" class="btn-warning">📺 看假廣告直接跳過本關</button>
+                    <button id="btn-fail-menu" class="btn-ghost">回主選單</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Satirical Rewarded Ad Modal -->
+        <div id="fake-ad-modal" class="modal-overlay">
+            <div class="fake-ad-box">
+                <span class="fake-ad-timer">獎勵廣告 · Google Ads</span>
+                <button id="fake-ad-close" title="關閉廣告">✕</button>
+
+                <div class="fake-ad-scene">
+                    <div id="fake-ad-emoji" style="font-size:56px; margin-bottom:8px;">👩‍👧🥶❄️</div>
+                    <h3 style="font-size:17px; color:#fde047; margin-bottom:4px;">暴風雪零下 -40°C！破屋漏風中！</h3>
+                    <p id="fake-ad-status" style="font-size:12px; color:#cbd5e1; line-height:1.4;">
+                        請做出正確選擇拯救暴風雪中的母女（或點擊右上角 X）
+                    </p>
+                </div>
+
+                <div class="fake-ad-choices">
+                    <button class="fake-choice-btn" data-choice="wrong">🪭 開電風扇吹她們</button>
+                    <button class="fake-choice-btn" data-choice="right">🔥 修補窗戶並生火</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    
+    
+    
+    
+    
+    
+    
+<script>
+// =========================================================
+// core.js — Sound Synthesizer, Particle Engine, Math & App Shell
+// =========================================================
+
+class SoundManager {
+    constructor() {
+        this.ctx = null;
+        this.enabled = true;
+        this.lastSprayTime = 0;
+        this.lastTickTime = 0;
+    }
+
+    _ensureCtx() {
+        if (!this.enabled) return false;
+        if (!this.ctx) {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (AudioCtx) this.ctx = new AudioCtx();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+            this.ctx.resume().catch(() => {});
+        }
+        return !!this.ctx;
+    }
+
+    play(type) {
+        if (!this._ensureCtx()) return;
+        const now = this.ctx.currentTime;
+
+        if (type === 'spray') {
+            if (now - this.lastSprayTime < 0.07) return;
+            this.lastSprayTime = now;
+            // Filtered white noise burst for realistic water washer sound
+            const bufferSize = this.ctx.sampleRate * 0.08;
+            const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+            const noise = this.ctx.createBufferSource();
+            noise.buffer = buffer;
+
+            const filter = this.ctx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.setValueAtTime(1400, now);
+            filter.Q.setValueAtTime(1.2, now);
+
+            const gain = this.ctx.createGain();
+            gain.gain.setValueAtTime(0.08, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(this.ctx.destination);
+            noise.start(now);
+            noise.stop(now + 0.08);
+            return;
+        }
+
+        if (type === 'tick') {
+            if (now - this.lastTickTime < 0.05) return;
+            this.lastTickTime = now;
+        }
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        if (type === 'click' || type === 'pin') {
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(360, now);
+            osc.frequency.exponentialRampToValueAtTime(680, now + 0.09);
+            gain.gain.setValueAtTime(0.22, now);
+            gain.gain.exponentialRampToValueAtTime(0.005, now + 0.09);
+            osc.start(now);
+            osc.stop(now + 0.09);
+        } else if (type === 'coin' || type === 'buff') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(587.33, now); // D5
+            osc.frequency.setValueAtTime(880, now + 0.07); // A5
+            gain.gain.setValueAtTime(0.22, now);
+            gain.gain.exponentialRampToValueAtTime(0.005, now + 0.24);
+            osc.start(now);
+            osc.stop(now + 0.24);
+        } else if (type === 'screw') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(480, now);
+            osc.frequency.linearRampToValueAtTime(760, now + 0.11);
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.exponentialRampToValueAtTime(0.005, now + 0.12);
+            osc.start(now);
+            osc.stop(now + 0.12);
+        } else if (type === 'hit' || type === 'sword') {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(220, now);
+            osc.frequency.exponentialRampToValueAtTime(75, now + 0.14);
+            gain.gain.setValueAtTime(0.25, now);
+            gain.gain.exponentialRampToValueAtTime(0.005, now + 0.14);
+            osc.start(now);
+            osc.stop(now + 0.14);
+        } else if (type === 'sizzle') {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(900, now);
+            osc.frequency.linearRampToValueAtTime(300, now + 0.18);
+            gain.gain.setValueAtTime(0.14, now);
+            gain.gain.exponentialRampToValueAtTime(0.005, now + 0.18);
+            osc.start(now);
+            osc.stop(now + 0.18);
+        } else if (type === 'tick') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(520, now);
+            gain.gain.setValueAtTime(0.1, now);
+            gain.gain.exponentialRampToValueAtTime(0.005, now + 0.04);
+            osc.start(now);
+            osc.stop(now + 0.04);
+        } else if (type === 'win') {
+            const notes = [523.25, 659.25, 783.99, 1046.5];
+            notes.forEach((freq, idx) => {
+                const o = this.ctx.createOscillator();
+                const g = this.ctx.createGain();
+                o.type = 'triangle';
+                o.frequency.setValueAtTime(freq, now + idx * 0.09);
+                g.gain.setValueAtTime(0.22, now + idx * 0.09);
+                g.gain.exponentialRampToValueAtTime(0.005, now + idx * 0.09 + 0.35);
+                o.connect(g);
+                g.connect(this.ctx.destination);
+                o.start(now + idx * 0.09);
+                o.stop(now + idx * 0.09 + 0.35);
+            });
+        } else if (type === 'fail') {
+            const notes = [349.23, 329.63, 311.13, 261.63];
+            notes.forEach((freq, idx) => {
+                const o = this.ctx.createOscillator();
+                const g = this.ctx.createGain();
+                o.type = 'sawtooth';
+                o.frequency.setValueAtTime(freq, now + idx * 0.12);
+                g.gain.setValueAtTime(0.18, now + idx * 0.12);
+                g.gain.exponentialRampToValueAtTime(0.005, now + idx * 0.12 + 0.3);
+                o.connect(g);
+                g.connect(this.ctx.destination);
+                o.start(now + idx * 0.12);
+                o.stop(now + idx * 0.12 + 0.3);
+            });
+        }
+    }
+}
+
+class ParticleManager {
+    constructor() {
+        this.particles = [];
+        this.floatTexts = [];
+    }
+
+    clear() {
+        this.particles = [];
+        this.floatTexts = [];
+    }
+
+    burst(x, y, color = '#fde047', count = 14, speed = 160) {
+        for (let i = 0; i < count; i++) {
+            const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.4;
+            const spd = speed * (0.4 + Math.random() * 0.8);
+            this.particles.push({
+                x,
+                y,
+                vx: Math.cos(angle) * spd,
+                vy: Math.sin(angle) * spd - 40,
+                r: 3 + Math.random() * 4,
+                color,
+                life: 0.45 + Math.random() * 0.35,
+                maxLife: 0.8,
+                gravity: 340
+            });
+        }
+    }
+
+    confetti(w, h) {
+        const colors = ['#f59e0b', '#10b981', '#3b82f6', '#ec4899', '#fde047', '#a855f7'];
+        for (let i = 0; i < 45; i++) {
+            this.particles.push({
+                x: w * 0.5 + (Math.random() - 0.5) * w * 0.6,
+                y: h * 0.35,
+                vx: (Math.random() - 0.5) * 280,
+                vy: -120 - Math.random() * 240,
+                r: 4 + Math.random() * 4,
+                color: colors[i % colors.length],
+                life: 1.0 + Math.random() * 0.6,
+                maxLife: 1.6,
+                gravity: 320
+            });
+        }
+    }
+
+    floatText(x, y, text, color = '#fde047', size = 20) {
+        this.floatTexts.push({
+            x,
+            y,
+            text,
+            color,
+            size,
+            vy: -55,
+            life: 0.85,
+            maxLife: 0.85
+        });
+    }
+
+    update(dt) {
+        for (let i = this.particles.length - 1; i >= 0; i--) {
+            const p = this.particles[i];
+            p.x += p.vx * dt;
+            p.y += p.vy * dt;
+            p.vy += (p.gravity || 0) * dt;
+            p.life -= dt;
+            if (p.life <= 0) this.particles.splice(i, 1);
+        }
+        for (let i = this.floatTexts.length - 1; i >= 0; i--) {
+            const ft = this.floatTexts[i];
+            ft.y += ft.vy * dt;
+            ft.life -= dt;
+            if (ft.life <= 0) this.floatTexts.splice(i, 1);
+        }
+    }
+
+    draw(ctx) {
+        ctx.save();
+        for (const p of this.particles) {
+            ctx.globalAlpha = Math.max(0, p.life / p.maxLife);
+            ctx.fillStyle = p.color;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        for (const ft of this.floatTexts) {
+            ctx.globalAlpha = Math.max(0, ft.life / ft.maxLife);
+            ctx.font = `900 ${ft.size}px -apple-system, BlinkMacSystemFont, sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = '#0f172a';
+            ctx.strokeText(ft.text, ft.x, ft.y);
+            ctx.fillStyle = ft.color;
+            ctx.fillText(ft.text, ft.x, ft.y);
+        }
+        ctx.restore();
+    }
+}
+
+const Geom = {
+    clamp(val, min, max) {
+        return Math.max(min, Math.min(max, val));
+    },
+
+    dist(x1, y1, x2, y2) {
+        return Math.hypot(x2 - x1, y2 - y1);
+    },
+
+    // Closest point on segment AB to point P
+    closestPointOnSegment(px, py, ax, ay, bx, by) {
+        const dx = bx - ax;
+        const dy = by - ay;
+        const lenSq = dx * dx + dy * dy;
+        if (lenSq === 0) return { x: ax, y: ay, t: 0 };
+        const t = Geom.clamp(((px - ax) * dx + (py - ay) * dy) / lenSq, 0, 1);
+        return { x: ax + t * dx, y: ay + t * dy, t };
+    },
+
+    // Circle vs Segment collision response: returns { hit, nx, ny, depth, cx, cy }
+    circleSegmentCollide(px, py, r, ax, ay, bx, by, thickness = 0) {
+        const cp = Geom.closestPointOnSegment(px, py, ax, ay, bx, by);
+        const dx = px - cp.x;
+        const dy = py - cp.y;
+        const d = Math.hypot(dx, dy);
+        const totalR = r + thickness;
+        if (d < totalR) {
+            const nx = d > 0.0001 ? dx / d : 0;
+            const ny = d > 0.0001 ? dy / d : -1;
+            return { hit: true, nx, ny, depth: totalR - d, cx: cp.x, cy: cp.y };
+        }
+        return { hit: false };
+    },
+
+    roundRect(ctx, x, y, w, h, r = 10) {
+        const radius = Math.min(r, w / 2, h / 2);
+        ctx.beginPath();
+        ctx.moveTo(x + radius, y);
+        ctx.arcTo(x + w, y, x + w, y + h, radius);
+        ctx.arcTo(x + w, y + h, x, y + h, radius);
+        ctx.arcTo(x, y + h, x, y, radius);
+        ctx.arcTo(x, y, x + w, y, radius);
+        ctx.closePath();
+    }
+};
+
+window.SFX = new SoundManager();
+window.FX = new ParticleManager();
+window.Geom = Geom;
+window.GameRegistry = {};
+
+
+// =========================================================
+// Game 1: 拔針救人 (Pull the Pin) — Sub-stepped 2D Chamber Physics
+// =========================================================
+
+class PullPinGame {
+    constructor(canvas, ctx, app) {
+        this.canvas = canvas;
+        this.ctx = ctx;
+        this.app = app;
+        this.W = canvas.width;
+        this.H = canvas.height;
+        this.level = 1;
+        this.state = 'play';
+        this.walls = [];
+        this.pins = [];
+        this.balls = [];
+        this.actors = [];
+        this.steams = [];
+        this.collectedCoins = 0;
+        this.totalCoins = 0;
+        this.endTimer = 0;
+    }
+
+    init(level = 1) {
+        this.level = level;
+        this.state = 'play';
+        this.walls = [];
+        this.pins = [];
+        this.balls = [];
+        this.actors = [];
+        this.steams = [];
+        this.collectedCoins = 0;
+        this.totalCoins = 0;
+        this.endTimer = 0;
+
+        if (level === 1) this._setupLevel1();
+        else if (level === 2) this._setupLevel2();
+        else this._setupLevel3();
+    }
+
+    _spawnCluster(cx, cy, count, type, spreadX = 48, spreadY = 36) {
+        const cols = Math.ceil(Math.sqrt(count * (spreadX / spreadY)));
+        for (let i = 0; i < count; i++) {
+            const col = i % cols;
+            const row = Math.floor(i / cols);
+            const x = cx - spreadX / 2 + (col + 0.5) * (spreadX / cols) + (Math.random() - 0.5) * 3;
+            const y = cy - spreadY / 2 + (row + 0.5) * 16 + (Math.random() - 0.5) * 3;
+            this.balls.push({
+                x,
+                y,
+                vx: (Math.random() - 0.5) * 10,
+                vy: 0,
+                r: type === 'coin' ? 9.5 : 8.5,
+                type, // 'water' | 'lava' | 'poison' | 'coin'
+                dead: false
+            });
+            if (type === 'coin') this.totalCoins++;
+        }
+    }
+
+    // Level 1: Water + Lava + Coins above Hero
+    // Pull Water(1) & Lava(2) to neutralize lava into steam, then pull Coin/Funnel pin(3) to drop coins to Hero!
+    _setupLevel1() {
+        this.hint = '提示：先拔水針澆滅岩漿，再讓金幣落向勇者！';
+        // Outer castle funnel frame
+        this.walls = [
+            // Left upper tank wall
+            { x1: 65, y1: 80, x2: 65, y2: 210 },
+            { x1: 65, y1: 210, x2: 155, y2: 295 },
+            // Center divider between water and lava
+            { x1: 210, y1: 80, x2: 210, y2: 205 },
+            // Right upper tank wall
+            { x1: 355, y1: 80, x2: 355, y2: 210 },
+            { x1: 355, y1: 210, x2: 265, y2: 295 },
+            // Middle mixing chamber walls
+            { x1: 155, y1: 295, x2: 155, y2: 365 },
+            { x1: 265, y1: 295, x2: 265, y2: 365 },
+            // Lower Hero chamber walls & floor
+            { x1: 155, y1: 365, x2: 120, y2: 430 },
+            { x1: 265, y1: 365, x2: 300, y2: 430 },
+            { x1: 120, y1: 430, x2: 120, y2: 525 },
+            { x1: 300, y1: 430, x2: 300, y2: 525 },
+            { x1: 120, y1: 525, x2: 300, y2: 525 }
+        ];
+
+        this.pins = [
+            { id: 1, x1: 65, y1: 205, x2: 210, y2: 205, handleX: 42, handleY: 205, dir: -1, pulled: false, offset: 0, label: '① 水門' },
+            { id: 2, x1: 210, y1: 205, x2: 355, y2: 205, handleX: 378, handleY: 205, dir: 1, pulled: false, offset: 0, label: '② 岩漿' },
+            { id: 3, x1: 155, y1: 360, x2: 265, y2: 360, handleX: 120, handleY: 360, dir: -1, pulled: false, offset: 0, label: '③ 寶藏門' }
+        ];
+
+        // Water in top-left, Lava in top-right, Coins in middle chamber
+        this._spawnCluster(138, 145, 22, 'water', 90, 65);
+        this._spawnCluster(282, 145, 12, 'lava', 80, 50);
+        this._spawnCluster(210, 322, 12, 'coin', 70, 40);
+
+        this.actors = [
+            { type: 'hero', x: 210, y: 492, r: 26, alive: true, happy: false }
+        ];
+    }
+
+    // Level 2: Goblin in middle chamber!
+    // Must drop Lava(1) to kill Goblin, then drop Water(2) to neutralize Lava, then pull Pin(3) so Coins reach Hero & Princess!
+    _setupLevel2() {
+        this.hint = '提示：先用岩漿消滅哥布林，再用清水澆滅岩漿，最後放行金幣！';
+        this.walls = [
+            // Top-left Lava tank
+            { x1: 55, y1: 75, x2: 55, y2: 190 },
+            { x1: 170, y1: 75, x2: 170, y2: 190 },
+            { x1: 55, y1: 190, x2: 135, y2: 265 },
+            // Top-center Water tank
+            { x1: 250, y1: 75, x2: 250, y2: 190 },
+            // Top-right Coin tank
+            { x1: 365, y1: 75, x2: 365, y2: 190 },
+            { x1: 365, y1: 190, x2: 285, y2: 265 },
+            // Funnel walls to middle Goblin chamber
+            { x1: 135, y1: 265, x2: 135, y2: 375 },
+            { x1: 285, y1: 265, x2: 285, y2: 375 },
+            // Bottom Hero + Princess room
+            { x1: 135, y1: 375, x2: 110, y2: 435 },
+            { x1: 285, y1: 375, x2: 310, y2: 435 },
+            { x1: 110, y1: 435, x2: 110, y2: 530 },
+            { x1: 310, y1: 435, x2: 310, y2: 530 },
+            { x1: 110, y1: 530, x2: 310, y2: 530 }
+        ];
+
+        this.pins = [
+            { id: 1, x1: 55, y1: 188, x2: 170, y2: 188, handleX: 34, handleY: 188, dir: -1, pulled: false, offset: 0, label: '① 岩漿' },
+            { id: 2, x1: 170, y1: 188, x2: 250, y2: 188, handleX: 210, handleY: 62, dir: 0, vertical: false, pulled: false, offset: 0, label: '② 清水' },
+            { id: 3, x1: 250, y1: 188, x2: 365, y2: 188, handleX: 386, handleY: 188, dir: 1, pulled: false, offset: 0, label: '③ 金幣' },
+            { id: 4, x1: 135, y1: 370, x2: 285, y2: 370, handleX: 100, handleY: 370, dir: -1, pulled: false, offset: 0, label: '④ 閘門' }
+        ];
+
+        this._spawnCluster(112, 135, 14, 'lava', 75, 55);
+        this._spawnCluster(210, 130, 20, 'water', 55, 65);
+        this._spawnCluster(308, 135, 14, 'coin', 75, 55);
+
+        this.actors = [
+            { type: 'goblin', x: 210, y: 335, r: 22, alive: true },
+            { type: 'hero', x: 175, y: 495, r: 25, alive: true, happy: false },
+            { type: 'princess', x: 245, y: 495, r: 24, alive: true, happy: false }
+        ];
+    }
+
+    // Level 3: Poison Gas + Lava + Goblin + Treasure
+    // Poison gas in middle-left tank must be drained down left waste chute (Pin 1),
+    // while Water (Pin 3) cools Lava (Pin 2) and kills Goblin, then Pin 4 drops Treasure to Hero!
+    _setupLevel3() {
+        this.hint = '提示：把左側毒氣排入廢氣坑，再用清水化解岩漿並救出公主！';
+        this.walls = [
+            // Left poison tank + waste chute on far left
+            { x1: 40, y1: 80, x2: 40, y2: 525 },
+            { x1: 125, y1: 80, x2: 125, y2: 210 },
+            // Waste pit floor on bottom-left
+            { x1: 40, y1: 525, x2: 115, y2: 525 },
+            { x1: 115, y1: 310, x2: 115, y2: 525 },
+            // Ramp from poison tank toward center if wrong pin is pulled
+            { x1: 125, y1: 280, x2: 165, y2: 350 },
+
+            // Top-center Lava & Water & Right Coins
+            { x1: 235, y1: 80, x2: 235, y2: 205 },
+            { x1: 315, y1: 80, x2: 315, y2: 205 },
+            { x1: 390, y1: 80, x2: 390, y2: 220 },
+            { x1: 390, y1: 220, x2: 305, y2: 350 },
+
+            // Main center chamber walls & floor
+            { x1: 165, y1: 350, x2: 165, y2: 525 },
+            { x1: 305, y1: 350, x2: 305, y2: 525 },
+            { x1: 165, y1: 525, x2: 305, y2: 525 }
+        ];
+
+        this.pins = [
+            // Pin 1: Waste drain floor under Poison tank (safe drain!)
+            { id: 1, x1: 40, y1: 280, x2: 115, y2: 280, handleX: 22, handleY: 280, dir: -1, pulled: false, offset: 0, label: '① 排毒閥' },
+            // Pin 2: Diagonal gate keeping Poison from flowing right into center chamber (TRAP pin!)
+            { id: 2, x1: 115, y1: 210, x2: 125, y2: 280, handleX: 145, handleY: 245, dir: 1, pulled: false, offset: 0, label: '② 毒氣門' },
+            // Pin 3: Lava tank floor
+            { id: 3, x1: 125, y1: 205, x2: 235, y2: 205, handleX: 180, handleY: 62, dir: -1, pulled: false, offset: 0, label: '③ 岩漿' },
+            // Pin 4: Water tank floor
+            { id: 4, x1: 235, y1: 205, x2: 315, y2: 205, handleX: 275, handleY: 62, dir: 1, pulled: false, offset: 0, label: '④ 聖水' },
+            // Pin 5: Coin tank floor
+            { id: 5, x1: 315, y1: 205, x2: 390, y2: 205, handleX: 404, handleY: 205, dir: 1, pulled: false, offset: 0, label: '⑤ 寶藏' },
+            // Pin 6: Center divider above Hero
+            { id: 6, x1: 165, y1: 385, x2: 305, y2: 385, handleX: 332, handleY: 385, dir: 1, pulled: false, offset: 0, label: '⑥ 城門' }
+        ];
+
+        this._spawnCluster(82, 165, 14, 'poison', 55, 55);
+        this._spawnCluster(180, 145, 14, 'lava', 75, 55);
+        this._spawnCluster(275, 140, 20, 'water', 55, 65);
+        this._spawnCluster(352, 145, 14, 'coin', 50, 55);
+
+        this.actors = [
+            { type: 'goblin', x: 235, y: 348, r: 22, alive: true },
+            { type: 'hero', x: 205, y: 492, r: 24, alive: true, happy: false },
+            { type: 'princess', x: 268, y: 492, r: 23, alive: true, happy: false }
+        ];
+    }
+
+    // "廣告弱智操作" — deliberately pulls the trap pin to show the classic ad fail!
+    triggerStupidAdMove() {
+        if (this.state !== 'play') return;
+        SFX.play('pin');
+        FX.floatText(this.W / 2, 100, '🤡 智商 -999 操作！', '#ef4444', 24);
+        if (this.level === 1) {
+            // Pull lava and middle gate, leave water closed!
+            this.pins[1].pulled = true;
+            this.pins[2].pulled = true;
+        } else if (this.level === 2) {
+            // Open bottom gate so goblin/lava hits hero immediately!
+            this.pins[0].pulled = true;
+            this.pins[3].pulled = true;
+        } else {
+            // Open poison trap gate and center gate!
+            this.pins[1].pulled = true;
+            this.pins[5].pulled = true;
+        }
+    }
+
+    onPointerDown(x, y) {
+        if (this.state !== 'play') return;
+        // Check if clicking near any unpulled pin (either its handle or its bar)
+        for (const pin of this.pins) {
+            if (pin.pulled) continue;
+            const dHandle = Geom.dist(x, y, pin.handleX, pin.handleY);
+            const seg = Geom.closestPointOnSegment(x, y, pin.x1, pin.y1, pin.x2, pin.y2);
+            const dBar = Geom.dist(x, y, seg.x, seg.y);
+            if (dHandle < 28 || dBar < 18) {
+                pin.pulled = true;
+                SFX.play('pin');
+                FX.burst(pin.handleX, pin.handleY, '#fde047', 10, 120);
+                break;
+            }
+        }
+    }
+
+    update(dt) {
+        // Animate pulled pins sliding out
+        for (const pin of this.pins) {
+            if (pin.pulled && pin.offset < 160) {
+                pin.offset += 520 * dt;
+            }
+        }
+
+        // Update steam puffs
+        for (let i = this.steams.length - 1; i >= 0; i--) {
+            const s = this.steams[i];
+            s.y -= 45 * dt;
+            s.r += 18 * dt;
+            s.life -= dt;
+            if (s.life <= 0) this.steams.splice(i, 1);
+        }
+
+        const subSteps = 4;
+        const subDt = dt / subSteps;
+        for (let s = 0; s < subSteps; s++) {
+            this._stepPhysics(subDt);
+        }
+
+        if (this.state === 'play') {
+            this._checkOutcomes(dt);
+        }
+    }
+
+    _stepPhysics(dt) {
+        const gravity = 520;
+        const activeSegs = [...this.walls];
+        for (const pin of this.pins) {
+            if (!pin.pulled || pin.offset < 35) {
+                activeSegs.push(pin);
+            }
+        }
+
+        // Move balls
+        for (const b of this.balls) {
+            if (b.dead) continue;
+            b.vy += gravity * dt;
+            // Slight horizontal jitter when falling to help fluid flow smoothly
+            b.vx *= 0.992;
+            b.vy *= 0.995;
+
+            b.x += b.vx * dt;
+            b.y += b.vy * dt;
+
+            // Keep inside canvas bounds
+            if (b.x < 25) { b.x = 25; b.vx = Math.abs(b.vx) * 0.5; }
+            if (b.x > this.W - 25) { b.x = this.W - 25; b.vx = -Math.abs(b.vx) * 0.5; }
+
+            // Wall & Pin collisions
+            for (const seg of activeSegs) {
+                const hit = Geom.circleSegmentCollide(b.x, b.y, b.r, seg.x1, seg.y1, seg.x2, seg.y2, 5);
+                if (hit.hit) {
+                    b.x += hit.nx * hit.depth;
+                    b.y += hit.ny * hit.depth;
+                    const vn = b.vx * hit.nx + b.vy * hit.ny;
+                    if (vn < 0) {
+                        const bounce = b.type === 'coin' ? 0.25 : 0.08;
+                        b.vx -= (1 + bounce) * vn * hit.nx;
+                        b.vy -= (1 + bounce) * vn * hit.ny;
+                        // Add slight tangential slide on flat surfaces so liquids don't stack vertically forever
+                        if (Math.abs(hit.ny) > 0.9 && Math.abs(b.vx) < 8) {
+                            b.vx += (Math.random() - 0.5) * 28;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Ball-to-Ball interactions & collisions
+        const n = this.balls.length;
+        for (let i = 0; i < n; i++) {
+            const a = this.balls[i];
+            if (a.dead) continue;
+            for (let j = i + 1; j < n; j++) {
+                const b = this.balls[j];
+                if (b.dead) continue;
+
+                const dx = b.x - a.x;
+                const dy = b.y - a.y;
+                const d = Math.hypot(dx, dy);
+                const minDist = a.r + b.r;
+
+                // Elemental reaction: Water + Lava -> Steam within splash radius!
+                if (d < minDist + 12 && ((a.type === 'water' && b.type === 'lava') || (a.type === 'lava' && b.type === 'water'))) {
+                    const lavaBall = a.type === 'lava' ? a : b;
+                    const waterBall = a.type === 'water' ? a : b;
+                    lavaBall.dead = true;
+                    if (Math.random() < 0.45) waterBall.dead = true;
+                    SFX.play('sizzle');
+                    this.steams.push({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, r: 10, life: 0.55 });
+                    if (a.dead) break;
+                    continue;
+                }
+
+                if (d < minDist && d > 0.0001) {
+
+                    // Elastic fluid separation
+                    const nx = dx / d;
+                    const ny = dy / d;
+                    const overlap = (minDist - d) * 0.5;
+                    a.x -= nx * overlap;
+                    a.y -= ny * overlap;
+                    b.x += nx * overlap;
+                    b.y += ny * overlap;
+
+                    const rvx = b.vx - a.vx;
+                    const rvy = b.vy - a.vy;
+                    const vn = rvx * nx + rvy * ny;
+                    if (vn < 0) {
+                        const imp = vn * 0.55;
+                        a.vx += imp * nx;
+                        a.vy += imp * ny;
+                        b.vx -= imp * nx;
+                        b.vy -= imp * ny;
+                    }
+                }
+            }
+        }
+
+        // Actor interactions with balls
+        for (const actor of this.actors) {
+            if (!actor.alive) continue;
+            for (const b of this.balls) {
+                if (b.dead) continue;
+                const d = Geom.dist(actor.x, actor.y, b.x, b.y);
+                if (d < actor.r + b.r) {
+                    if (actor.type === 'goblin') {
+                        if (b.type === 'lava' || b.type === 'poison') {
+                            actor.alive = false;
+                            SFX.play('hit');
+                            FX.burst(actor.x, actor.y, '#ef4444', 18, 160);
+                            FX.floatText(actor.x, actor.y - 20, '👺 哥布林消滅！', '#10b981', 18);
+                        }
+                    } else if (actor.type === 'hero' || actor.type === 'princess') {
+                        if (b.type === 'lava' || b.type === 'poison') {
+                            actor.alive = false;
+                            b.dead = true;
+                            SFX.play('sizzle');
+                            FX.burst(actor.x, actor.y, '#ef4444', 22, 180);
+                            FX.floatText(actor.x, actor.y - 24, b.type === 'lava' ? '🔥 被岩漿燒焦！' : '☠️ 中毒身亡！', '#ef4444', 20);
+                        } else if (b.type === 'coin') {
+                            b.dead = true;
+                            this.collectedCoins++;
+                            actor.happy = true;
+                            SFX.play('coin');
+                            FX.burst(b.x, b.y, '#fde047', 8, 90);
+                            FX.floatText(actor.x + (Math.random() - 0.5) * 30, actor.y - 28, '+$100', '#fde047', 16);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Goblin threat: if gate between Goblin and Hero is pulled while Goblin is still alive!
+        const goblin = this.actors.find(a => a.type === 'goblin' && a.alive);
+        const hero = this.actors.find(a => a.type === 'hero' && a.alive);
+        if (goblin && hero) {
+            // Check if the gate below goblin was pulled
+            const gatePin = this.level === 2 ? this.pins[3] : (this.level === 3 ? this.pins[5] : null);
+            if (gatePin && gatePin.pulled && gatePin.offset > 40) {
+                // Goblin drops down to attack Hero!
+                goblin.y += 180 * dt;
+                if (Geom.dist(goblin.x, goblin.y, hero.x, hero.y) < goblin.r + hero.r + 12) {
+                    hero.alive = false;
+                    SFX.play('hit');
+                    FX.burst(hero.x, hero.y, '#ef4444', 20, 170);
+                    FX.floatText(hero.x, hero.y - 25, '👺 被哥布林擊殺！', '#ef4444', 20);
+                }
+            }
+        }
+    }
+
+    _checkOutcomes(dt) {
+        const heroAlive = this.actors.filter(a => a.type === 'hero' || a.type === 'princess').every(a => a.alive);
+        if (!heroAlive) {
+            this.state = 'fail';
+            setTimeout(() => this.app.showFail('拔錯針啦！人質被陷阱吞噬了！'), 550);
+            return;
+        }
+
+        const goblinAlive = this.actors.some(a => a.type === 'goblin' && a.alive);
+        // Win when all goblins are dead and at least 60% of coins are collected
+        const requiredCoins = Math.max(1, Math.floor(this.totalCoins * 0.6));
+        if (!goblinAlive && this.collectedCoins >= requiredCoins) {
+            this.endTimer += dt;
+            if (this.endTimer > 0.35) {
+                this.state = 'win';
+                FX.confetti(this.W, this.H);
+                setTimeout(() => this.app.showWin('完美拔針！成功拯救人質並奪得寶藏！'), 500);
+            }
+        }
+    }
+
+    draw(ctx) {
+        // Castle Dungeon Stone Background
+        const grad = ctx.createLinearGradient(0, 0, 0, this.H);
+        grad.addColorStop(0, '#1e293b');
+        grad.addColorStop(1, '#0f172a');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, this.W, this.H);
+
+        // Subtle brick pattern
+        ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+        ctx.lineWidth = 1;
+        for (let y = 40; y < this.H; y += 32) {
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(this.W, y);
+            ctx.stroke();
+        }
+
+        // Top HUD Banner
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+        Geom.roundRect(ctx, 16, 12, this.W - 32, 42, 10);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+        ctx.stroke();
+
+        ctx.fillStyle = '#fde047';
+        ctx.font = 'bold 13px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(this.hint, 28, 33);
+
+        // Coin progress badge
+        ctx.textAlign = 'right';
+        ctx.fillStyle = '#10b981';
+        ctx.font = '900 14px sans-serif';
+        const req = Math.max(1, Math.floor(this.totalCoins * 0.6));
+        ctx.fillText(`💰 ${this.collectedCoins}/${req}`, this.W - 26, 33);
+
+        // Draw waste pit label in Level 3
+        if (this.level === 3) {
+            ctx.fillStyle = 'rgba(16, 185, 129, 0.18)';
+            ctx.fillRect(42, 470, 71, 53);
+            ctx.fillStyle = '#6ee7b7';
+            ctx.font = 'bold 11px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('♻️ 排毒池', 77, 500);
+        }
+
+        // Draw Liquid & Coin Balls
+        for (const b of this.balls) {
+            if (b.dead) continue;
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+            if (b.type === 'water') {
+                ctx.fillStyle = '#38bdf8';
+                ctx.shadowColor = '#0284c7';
+                ctx.shadowBlur = 6;
+                ctx.fill();
+                ctx.fillStyle = '#bae6fd';
+                ctx.beginPath();
+                ctx.arc(b.x - 2.5, b.y - 2.5, 2.5, 0, Math.PI * 2);
+                ctx.fill();
+            } else if (b.type === 'lava') {
+                ctx.fillStyle = '#ef4444';
+                ctx.shadowColor = '#f97316';
+                ctx.shadowBlur = 8;
+                ctx.fill();
+                ctx.fillStyle = '#fde047';
+                ctx.beginPath();
+                ctx.arc(b.x, b.y, b.r * 0.5, 0, Math.PI * 2);
+                ctx.fill();
+            } else if (b.type === 'poison') {
+                ctx.fillStyle = '#a855f7';
+                ctx.shadowColor = '#c084fc';
+                ctx.shadowBlur = 7;
+                ctx.fill();
+                ctx.fillStyle = '#4ade80';
+                ctx.beginPath();
+                ctx.arc(b.x - 2, b.y - 2, 3, 0, Math.PI * 2);
+                ctx.fill();
+            } else if (b.type === 'coin') {
+                ctx.fillStyle = '#facc15';
+                ctx.strokeStyle = '#ca8a04';
+                ctx.lineWidth = 2;
+                ctx.fill();
+                ctx.stroke();
+                ctx.fillStyle = '#854d0e';
+                ctx.font = 'bold 10px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('
+</html>
+, b.x, b.y + 0.5);
+            }
+            ctx.restore();
+        }
+
+        // Draw Steam Puffs
+        for (const s of this.steams) {
+            ctx.save();
+            ctx.globalAlpha = Math.max(0, s.life / 0.55);
+            ctx.fillStyle = '#e2e8f0';
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+
+        // Draw Actors (Hero, Princess, Goblin)
+        for (const a of this.actors) {
+            ctx.save();
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            // Pedestal / shadow
+            ctx.fillStyle = 'rgba(0,0,0,0.35)';
+            ctx.beginPath();
+            ctx.ellipse(a.x, a.y + a.r - 2, a.r * 0.85, 6, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.font = '38px sans-serif';
+            if (!a.alive) {
+                ctx.fillText('💀', a.x, a.y);
+            } else if (a.type === 'hero') {
+                ctx.fillText(a.happy ? '🤴' : '🦸‍♂️', a.x, a.y);
+            } else if (a.type === 'princess') {
+                ctx.fillText('👸', a.x, a.y);
+            } else if (a.type === 'goblin') {
+                ctx.fillText('👺', a.x, a.y);
+            }
+            ctx.restore();
+        }
+
+        // Draw Castle Walls
+        ctx.save();
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        for (const w of this.walls) {
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 11;
+            ctx.beginPath();
+            ctx.moveTo(w.x1, w.y1);
+            ctx.lineTo(w.x2, w.y2);
+            ctx.stroke();
+
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(w.x1, w.y1);
+            ctx.lineTo(w.x2, w.y2);
+            ctx.stroke();
+        }
+        ctx.restore();
+
+        // Draw Golden Pins & Pull Handles
+        for (const pin of this.pins) {
+            if (pin.pulled && pin.offset >= 150) continue;
+            ctx.save();
+            const dx = pin.x2 - pin.x1;
+            const dy = pin.y2 - pin.y1;
+            const len = Math.hypot(dx, dy) || 1;
+            const ux = (dx / len) * (pin.dir || 1) * pin.offset;
+            const uy = (dy / len) * (pin.dir || 1) * pin.offset;
+
+            const x1 = pin.x1 + ux;
+            const y1 = pin.y1 + uy;
+            const x2 = pin.x2 + ux;
+            const y2 = pin.y2 + uy;
+            const hx = pin.handleX + ux;
+            const hy = pin.handleY + uy;
+
+            // Pin metallic shaft
+            ctx.strokeStyle = '#b45309';
+            ctx.lineWidth = 9;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+
+            ctx.strokeStyle = '#facc15';
+            ctx.lineWidth = 5;
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+
+            // Golden Pull Ring Handle
+            ctx.fillStyle = '#f59e0b';
+            ctx.strokeStyle = '#fef08a';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(hx, hy, 14, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#0f172a';
+            ctx.font = 'bold 10px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('拔', hx, hy + 0.5);
+
+            // Pin label tag
+            if (!pin.pulled && pin.label) {
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+                Geom.roundRect(ctx, hx - 26, hy - 31, 52, 15, 4);
+                ctx.fill();
+                ctx.fillStyle = '#fde047';
+                ctx.font = 'bold 10px sans-serif';
+                ctx.fillText(pin.label, hx, hy - 23);
+            }
+            ctx.restore();
+        }
+    }
+}
+
+window.GameRegistry[1] = PullPinGame;
+
+
+// =========================================================
+// Game 2: 算術爬塔 (Hero Wars Tower) — Interactive Canvas Tower Battle
+// =========================================================
+
+class HeroTowerGame {
+    constructor(canvas, ctx, app) {
+        this.canvas = canvas;
+        this.ctx = ctx;
+        this.app = app;
+        this.W = canvas.width;
+        this.H = canvas.height;
+        this.level = 1;
+        this.state = 'play'; // 'play' | 'anim' | 'win' | 'fail'
+    }
+
+    init(level = 1) {
+        this.level = level;
+        this.state = 'play';
+        this.hero = {
+            power: level === 1 ? 10 : (level === 2 ? 15 : 20),
+            x: 82,
+            y: 465,
+            homeX: 82,
+            homeY: 465,
+            targetX: 82,
+            targetY: 465,
+            weaponEmoji: '🗡️',
+            pose: 'idle' // 'idle' | 'jump' | 'slash' | 'dead'
+        };
+        this.slashTimer = 0;
+        this.activeRuleRoom = null;
+
+        if (level === 1) {
+            this.hint = '提示：由小到大擊敗怪物吸收戰力，小心別越級挑戰！';
+            this.towers = [
+                {
+                    title: '魔龍之塔',
+                    x: 185,
+                    w: 195,
+                    rooms: [
+                        { id: 1, name: '哥布林斥候', emoji: '👺', type: 'enemy', val: 6, op: '+' },
+                        { id: 2, name: '烈焰聖劍', emoji: '⚔️', type: 'buff', val: 12, op: '+' },
+                        { id: 3, name: '暗影吸血鬼', emoji: '🧛', type: 'enemy', val: 22, op: '+' },
+                        { id: 4, name: '煉獄魔龍', emoji: '🐉', extra: '👸', type: 'boss', val: 45, op: '+' }
+                    ]
+                }
+            ];
+        } else if (level === 2) {
+            this.hint = '提示：先拿聖盾 ×2 倍增戰力，避開紅色毒藥陷阱！';
+            this.towers = [
+                {
+                    title: '前哨衛塔',
+                    x: 150,
+                    w: 125,
+                    rooms: [
+                        { id: 1, name: '哥布林兵', emoji: '👺', type: 'enemy', val: 10, op: '+' },
+                        { id: 2, name: '荒野狼人', emoji: '🐺', type: 'enemy', val: 22, op: '+' },
+                        { id: 3, name: '黃金聖盾', emoji: '🛡️', type: 'buff', val: 2, op: '*' }
+                    ]
+                },
+                {
+                    title: '魔王主堡',
+                    x: 288,
+                    w: 120,
+                    rooms: [
+                        { id: 4, name: '詛咒毒藥', emoji: '🧪', type: 'trap', val: 2, op: '/' },
+                        { id: 5, name: '鮮血伯爵', emoji: '🧛', type: 'enemy', val: 80, op: '+' },
+                        { id: 6, name: '雙塔魔王', emoji: '👹', extra: '👸', type: 'boss', val: 150, op: '+' }
+                    ]
+                }
+            ];
+        } else {
+            this.hint = '提示：算準加成順序，千萬別踩到 -50 虛弱陷阱！';
+            this.towers = [
+                {
+                    title: '試煉之塔',
+                    x: 148,
+                    w: 124,
+                    rooms: [
+                        { id: 1, name: '哥布林隊', emoji: '👺', type: 'enemy', val: 15, op: '+' },
+                        { id: 2, name: '雷霆戰斧', emoji: '🪓', type: 'buff', val: 25, op: '+' },
+                        { id: 3, name: '巨石傀儡', emoji: '🗿', type: 'enemy', val: 55, op: '+' },
+                        { id: 4, name: '虛弱毒霧', emoji: '☠️', type: 'trap', val: 50, op: '-' }
+                    ]
+                },
+                {
+                    title: '深淵王座',
+                    x: 285,
+                    w: 124,
+                    rooms: [
+                        { id: 5, name: '亡靈騎士', emoji: '💀', type: 'enemy', val: 100, op: '+' },
+                        { id: 6, name: '女神祝福', emoji: '✨', type: 'buff', val: 2, op: '*' },
+                        { id: 7, name: '炎魔領主', emoji: '🔥', type: 'enemy', val: 380, op: '+' },
+                        { id: 8, name: '終極魔神', emoji: '🐉', extra: '👸', type: 'boss', val: 750, op: '+' }
+                    ]
+                }
+            ];
+        }
+
+        this._layoutRooms();
+    }
+
+    _layoutRooms() {
+        const baseBottom = 515;
+        for (const t of this.towers) {
+            const roomH = t.rooms.length >= 4 ? 92 : 108;
+            t.rooms.forEach((r, idx) => {
+                r.x = t.x;
+                r.w = t.w;
+                r.h = roomH;
+                r.y = baseBottom - (idx + 1) * (roomH + 8);
+                r.cleared = false;
+            });
+        }
+    }
+
+    // "廣告弱智操作" — leap straight into the strongest Boss room to get one-shotted!
+    triggerStupidAdMove() {
+        if (this.state !== 'play') return;
+        const lastTower = this.towers[this.towers.length - 1];
+        const bossRoom = lastTower.rooms.find(r => r.type === 'boss' && !r.cleared) || lastTower.rooms[lastTower.rooms.length - 1];
+        if (bossRoom) {
+            FX.floatText(this.W / 2, 100, '🤡 廣告主角：我 Lv.' + this.hero.power + ' 一定打得贏魔王！', '#ef4444', 18);
+            this._engageRoom(bossRoom, true);
+        }
+    }
+
+    onPointerDown(x, y) {
+        if (this.state !== 'play') return;
+        for (let ti = 0; ti < this.towers.length; ti++) {
+            const t = this.towers[ti];
+            // Check if previous tower still has undefeated enemies/bosses
+            if (ti > 0) {
+                const prevHasEnemies = this.towers[ti - 1].rooms.some(
+                    r => !r.cleared && (r.type === 'enemy' || r.type === 'boss')
+                );
+                if (prevHasEnemies) {
+                    // Check if user clicked this locked tower to show helpful message
+                    for (const r of t.rooms) {
+                        if (x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h) {
+                            SFX.play('tick');
+                            FX.floatText(r.x + r.w / 2, r.y + r.h / 2, '🔒 請先清空前一座塔的怪物！', '#fde047', 16);
+                            return;
+                        }
+                    }
+                    continue;
+                }
+            }
+
+            for (const r of t.rooms) {
+                if (r.cleared) continue;
+                if (x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h) {
+                    this._engageRoom(r, false);
+                    return;
+                }
+            }
+        }
+    }
+
+    _engageRoom(room, forcedAdFail = false) {
+        this.state = 'anim';
+        this.activeRuleRoom = room;
+        this.hero.pose = 'jump';
+        this.hero.targetX = room.x + 36;
+        this.hero.targetY = room.y + room.h / 2 + 10;
+        this.slashTimer = 0.55;
+        SFX.play('click');
+    }
+
+    update(dt) {
+        if (this.state === 'anim' && this.activeRuleRoom) {
+            this.hero.x += (this.hero.targetX - this.hero.x) * Math.min(1, dt * 14);
+            this.hero.y += (this.hero.targetY - this.hero.y) * Math.min(1, dt * 14);
+            this.slashTimer -= dt;
+
+            if (this.slashTimer <= 0.28 && this.hero.pose === 'jump') {
+                this.hero.pose = 'slash';
+                SFX.play('sword');
+                FX.burst(this.activeRuleRoom.x + this.activeRuleRoom.w / 2, this.activeRuleRoom.y + this.activeRuleRoom.h / 2, '#fde047', 14, 150);
+            }
+
+            if (this.slashTimer <= 0) {
+                this._resolveRoom(this.activeRuleRoom);
+            }
+        } else if (this.state === 'play') {
+            this.hero.x += (this.hero.homeX - this.hero.x) * Math.min(1, dt * 10);
+            this.hero.y += (this.hero.homeY - this.hero.y) * Math.min(1, dt * 10);
+        }
+    }
+
+    _resolveRoom(room) {
+        const cx = room.x + room.w / 2;
+        const cy = room.y + room.h / 2;
+
+        if (room.type === 'buff') {
+            if (room.op === '+') {
+                this.hero.power += room.val;
+                FX.floatText(cx, cy - 10, `戰力 +${room.val}！`, '#10b981', 22);
+            } else if (room.op === '*') {
+                this.hero.power *= room.val;
+                FX.floatText(cx, cy - 10, `戰力 ×${room.val}！`, '#10b981', 22);
+            }
+            this.hero.weaponEmoji = room.emoji;
+            room.cleared = true;
+            SFX.play('buff');
+            this.hero.pose = 'idle';
+            this.activeRuleRoom = null;
+            this.state = 'play';
+            return;
+        }
+
+        if (room.type === 'trap') {
+            if (room.op === '-') {
+                this.hero.power = Math.max(1, this.hero.power - room.val);
+                FX.floatText(cx, cy - 10, `中陷阱 -${room.val}！`, '#ef4444', 22);
+            } else if (room.op === '/') {
+                this.hero.power = Math.max(1, Math.floor(this.hero.power / room.val));
+                FX.floatText(cx, cy - 10, `戰力減半 ÷${room.val}！`, '#ef4444', 22);
+            }
+            room.cleared = true;
+            SFX.play('hit');
+            this.hero.pose = 'idle';
+            this.activeRuleRoom = null;
+            this.state = 'play';
+            return;
+        }
+
+        // Enemy or Boss battle: Hero wins if hero.power >= room.val
+        if (this.hero.power >= room.val) {
+            this.hero.power += room.val;
+            room.cleared = true;
+            SFX.play('coin');
+            FX.burst(cx, cy, '#10b981', 18, 170);
+            FX.floatText(cx, cy - 12, `擊破！+${room.val}`, '#fde047', 22);
+
+            this.hero.pose = 'idle';
+            this.activeRuleRoom = null;
+
+            // Check if all enemies & bosses across all towers are cleared
+            const remainingEnemies = this.towers.some(t =>
+                t.rooms.some(r => !r.cleared && (r.type === 'enemy' || r.type === 'boss'))
+            );
+
+            if (!remainingEnemies) {
+                this.state = 'win';
+                FX.confetti(this.W, this.H);
+                setTimeout(() => this.app.showWin(`戰力突破 Lv.${this.hero.power}！成功討伐魔王救出公主！`), 450);
+            } else {
+                this.state = 'play';
+            }
+        } else {
+            // Defeated!
+            this.hero.pose = 'dead';
+            this.state = 'fail';
+            SFX.play('fail');
+            FX.burst(this.hero.x, this.hero.y, '#ef4444', 24, 180);
+            FX.floatText(cx, cy - 15, `戰力不足 (${this.hero.power} < ${room.val})！`, '#ef4444', 20);
+            setTimeout(() => this.app.showFail(`算術失誤！你的戰力 (Lv.${this.hero.power}) 打不過 Lv.${room.val} 的敵人！`), 600);
+        }
+    }
+
+    draw(ctx) {
+        // Sky & Evening Castle Backdrop
+        const sky = ctx.createLinearGradient(0, 0, 0, this.H);
+        sky.addColorStop(0, '#1e1b4b');
+        sky.addColorStop(0.6, '#312e81');
+        sky.addColorStop(1, '#0f172a');
+        ctx.fillStyle = sky;
+        ctx.fillRect(0, 0, this.W, this.H);
+
+        // Ground Bridge
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(0, 515, this.W, this.H - 515);
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(0, 515, this.W, 8);
+
+        // Top Hint Banner
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+        Geom.roundRect(ctx, 14, 12, this.W - 28, 40, 10);
+        ctx.fill();
+        ctx.fillStyle = '#fde047';
+        ctx.font = 'bold 13px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(this.hint, this.W / 2, 32);
+
+        // Draw Player Starting Turret on Left
+        const hx = 22, hw = 112, hy = 385, hh = 130;
+        ctx.fillStyle = '#1e293b';
+        ctx.strokeStyle = '#3b82f6';
+        ctx.lineWidth = 3;
+        Geom.roundRect(ctx, hx, hy, hw, hh, 8);
+        ctx.fill();
+        ctx.stroke();
+
+        // Battlements on Player Turret
+        for (let bx = hx; bx < hx + hw - 10; bx += 24) {
+            ctx.fillStyle = '#3b82f6';
+            ctx.fillRect(bx, hy - 10, 16, 10);
+        }
+        ctx.fillStyle = '#93c5fd';
+        ctx.font = 'bold 12px sans-serif';
+        ctx.fillText('勇者起點', hx + hw / 2, hy + 20);
+
+        // Draw Enemy Towers
+        for (let ti = 0; ti < this.towers.length; ti++) {
+            const t = this.towers[ti];
+            const topRoom = t.rooms[t.rooms.length - 1];
+            const towerTop = topRoom.y - 26;
+            const towerH = 515 - towerTop;
+
+            const isLocked = ti > 0 && this.towers[ti - 1].rooms.some(
+                r => !r.cleared && (r.type === 'enemy' || r.type === 'boss')
+            );
+
+            // Outer stone tower shell
+            ctx.fillStyle = '#1e293b';
+            ctx.strokeStyle = isLocked ? '#475569' : '#94a3b8';
+            ctx.lineWidth = 3;
+            Geom.roundRect(ctx, t.x - 6, towerTop, t.w + 12, towerH, 8);
+            ctx.fill();
+            ctx.stroke();
+
+            // Roof battlements
+            for (let bx = t.x - 4; bx < t.x + t.w; bx += 24) {
+                ctx.fillStyle = isLocked ? '#475569' : '#64748b';
+                ctx.fillRect(bx, towerTop - 10, 15, 10);
+            }
+
+            // Tower Title
+            ctx.fillStyle = isLocked ? '#94a3b8' : '#fde047';
+            ctx.font = 'bold 12px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText((isLocked ? '🔒 ' : '🏰 ') + t.title, t.x + t.w / 2, towerTop + 13);
+
+            // Draw Rooms
+            for (const r of t.rooms) {
+                ctx.save();
+                if (r.cleared) {
+                    ctx.fillStyle = 'rgba(15, 23, 42, 0.55)';
+                    ctx.strokeStyle = 'rgba(148, 163, 184, 0.2)';
+                } else if (r.type === 'buff') {
+                    ctx.fillStyle = 'rgba(6, 78, 59, 0.85)';
+                    ctx.strokeStyle = '#10b981';
+                } else if (r.type === 'trap') {
+                    ctx.fillStyle = 'rgba(127, 29, 29, 0.85)';
+                    ctx.strokeStyle = '#ef4444';
+                } else if (r.type === 'boss') {
+                    ctx.fillStyle = 'rgba(88, 28, 135, 0.85)';
+                    ctx.strokeStyle = '#f59e0b';
+                } else {
+                    ctx.fillStyle = 'rgba(30, 41, 59, 0.95)';
+                    ctx.strokeStyle = !isLocked && this.hero.power >= r.val ? '#38bdf8' : '#64748b';
+                }
+
+                ctx.lineWidth = 2.5;
+                Geom.roundRect(ctx, r.x, r.y, r.w, r.h, 8);
+                ctx.fill();
+                ctx.stroke();
+
+                if (r.cleared) {
+                    ctx.fillStyle = 'rgba(16, 185, 129, 0.5)';
+                    ctx.font = 'bold 24px sans-serif';
+                    ctx.fillText('✓ 已清空', r.x + r.w / 2, r.y + r.h / 2);
+                } else {
+                    const cx = r.x + r.w / 2;
+                    const cy = r.y + r.h / 2;
+
+                    // Sprite emoji
+                    ctx.font = r.extra ? '32px sans-serif' : '36px sans-serif';
+                    ctx.fillText(r.extra ? `${r.emoji}${r.extra}` : r.emoji, cx, cy - 10);
+
+                    // Room Name
+                    ctx.fillStyle = '#cbd5e1';
+                    ctx.font = 'bold 11px sans-serif';
+                    ctx.fillText(r.name, cx, r.y + 14);
+
+                    // Power / Math Badge
+                    let badgeText = '';
+                    let badgeColor = '#ef4444';
+                    if (r.type === 'buff') {
+                        badgeText = r.op === '*' ? `戰力 ×${r.val}` : `戰力 +${r.val}`;
+                        badgeColor = '#10b981';
+                    } else if (r.type === 'trap') {
+                        badgeText = r.op === '/' ? `陷阱 ÷${r.val}` : `陷阱 -${r.val}`;
+                        badgeColor = '#f97316';
+                    } else {
+                        badgeText = `Lv. ${r.val}`;
+                        badgeColor = this.hero.power >= r.val ? '#3b82f6' : '#ef4444';
+                    }
+
+                    ctx.fillStyle = badgeColor;
+                    Geom.roundRect(ctx, cx - 38, r.y + r.h - 24, 76, 19, 6);
+                    ctx.fill();
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = '900 12px sans-serif';
+                    ctx.fillText(badgeText, cx, r.y + r.h - 14);
+                }
+                ctx.restore();
+            }
+        }
+
+        // Draw Hero Character
+        ctx.save();
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        // Hero aura
+        ctx.fillStyle = 'rgba(59, 130, 246, 0.25)';
+        ctx.beginPath();
+        ctx.arc(this.hero.x, this.hero.y, 32, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.font = '42px sans-serif';
+        if (this.hero.pose === 'dead') {
+            ctx.fillText('💀', this.hero.x, this.hero.y);
+        } else {
+            ctx.fillText('🦸‍♂️', this.hero.x, this.hero.y);
+            ctx.font = '22px sans-serif';
+            const swingOffset = this.hero.pose === 'slash' ? 14 : 0;
+            ctx.fillText(this.hero.weaponEmoji, this.hero.x + 22 + swingOffset, this.hero.y - 6 + swingOffset);
+        }
+
+        // Hero Power Badge above head
+        ctx.fillStyle = '#2563eb';
+        ctx.strokeStyle = '#fde047';
+        ctx.lineWidth = 2;
+        Geom.roundRect(ctx, this.hero.x - 38, this.hero.y - 48, 76, 22, 8);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#fde047';
+        ctx.font = '900 13px sans-serif';
+        ctx.fillText(`Lv. ${this.hero.power}`, this.hero.x, this.hero.y - 37);
+        ctx.restore();
+    }
+}
+
+window.GameRegistry[2] = HeroTowerGame;
+
+
+// =========================================================
+// Game 3: 人數倍增跑酷 (Crowd Runner) — Scrolling Highway & Boss Clash
+// =========================================================
+
+class CrowdRunnerGame {
+    constructor(canvas, ctx, app) {
+        this.canvas = canvas;
+        this.ctx = ctx;
+        this.app = app;
+        this.W = canvas.width;
+        this.H = canvas.height;
+        this.level = 1;
+        this.state = 'run'; // 'run' | 'clash' | 'win' | 'fail'
+    }
+
+    init(level = 1) {
+        this.level = level;
+        this.state = 'run';
+        this.crowd = level === 1 ? 5 : (level === 2 ? 10 : 8);
+        this.playerX = this.W / 2;
+        this.targetX = this.W / 2;
+        this.playerY = 475;
+        this.dist = 0;
+        this.speed = 215;
+        this.adBotMode = false;
+        this.clashTimer = 0;
+
+        // Pre-compute spiral offsets for visual soldiers
+        this.offsets = [];
+        for (let i = 0; i < 55; i++) {
+            const angle = i * 2.39996; // golden angle
+            const r = i === 0 ? 0 : 7 * Math.sqrt(i);
+            this.offsets.push({ dx: Math.cos(angle) * r, dy: Math.sin(angle) * r * 0.7, phase: i * 0.7 });
+        }
+
+        if (level === 1) {
+            this.hint = '左右滑動選擇藍色倍增門，累積大軍推倒魔王！';
+            this.gates = [
+                { z: 320, left: { text: '+15', op: '+', val: 15, good: true }, right: { text: '-3', op: '-', val: 3, good: false } },
+                { z: 680, left: { text: '÷2', op: '/', val: 2, good: false }, right: { text: '×2', op: '*', val: 2, good: true } },
+                { z: 1040, enemySquad: { x: 210, count: 10 } },
+                { z: 1380, left: { text: '×3', op: '*', val: 3, good: true }, right: { text: '+10', op: '+', val: 10, good: true } },
+                { z: 1740, left: { text: '-20', op: '-', val: 20, good: false }, right: { text: '+25', op: '+', val: 25, good: true } }
+            ];
+            this.bossZ = 2120;
+            this.bossHP = 80;
+            this.bossMaxHP = 80;
+        } else if (level === 2) {
+            this.hint = '小心敵軍攔截！算準加法與乘法最大化人數！';
+            this.gates = [
+                { z: 320, left: { text: '×2', op: '*', val: 2, good: true }, right: { text: '+25', op: '+', val: 25, good: true } },
+                { z: 660, enemySquad: { x: 145, count: 15 } },
+                { z: 980, left: { text: '+30', op: '+', val: 30, good: true }, right: { text: '÷2', op: '/', val: 2, good: false } },
+                { z: 1320, left: { text: '-25', op: '-', val: 25, good: false }, right: { text: '×2', op: '*', val: 2, good: true } },
+                { z: 1660, enemySquad: { x: 265, count: 25 } },
+                { z: 1980, left: { text: '×2', op: '*', val: 2, good: true }, right: { text: '-40', op: '-', val: 40, good: false } }
+            ];
+            this.bossZ = 2360;
+            this.bossHP = 160;
+            this.bossMaxHP = 160;
+        } else {
+            this.hint = '終極大軍對決！避開紅門與路障，突破 300 人大關！';
+            this.gates = [
+                { z: 300, left: { text: '+22', op: '+', val: 22, good: true }, right: { text: '×2', op: '*', val: 2, good: false } },
+                { z: 620, left: { text: '÷3', op: '/', val: 3, good: false }, right: { text: '×3', op: '*', val: 3, good: true } },
+                { z: 940, enemySquad: { x: 210, count: 25 } },
+                { z: 1260, left: { text: '×2', op: '*', val: 2, good: true }, right: { text: '+15', op: '+', val: 15, good: false } },
+                { z: 1580, enemySquad: { x: 140, count: 35 } },
+                { z: 1900, left: { text: '-50', op: '-', val: 50, good: false }, right: { text: '×3', op: '*', val: 3, good: true } }
+            ];
+            this.bossZ = 2280;
+            this.bossHP = 280;
+            this.bossMaxHP = 280;
+        }
+    }
+
+    triggerStupidAdMove() {
+        if (this.state !== 'run') return;
+        this.adBotMode = true;
+        SFX.play('pin');
+        FX.floatText(this.W / 2, 120, '🤡 廣告AI啟動：專挑紅門撞！', '#ef4444', 20);
+    }
+
+    onPointerDown(x, y) {
+        if (this.state !== 'run') return;
+        this.adBotMode = false;
+        this.targetX = Geom.clamp(x, 85, this.W - 85);
+    }
+
+    onPointerMove(x, y, isDown) {
+        if (this.state !== 'run' || !isDown) return;
+        this.adBotMode = false;
+        this.targetX = Geom.clamp(x, 85, this.W - 85);
+    }
+
+    _evalGate(crowd, opt) {
+        if (opt.op === '+') return crowd + opt.val;
+        if (opt.op === '-') return crowd - opt.val;
+        if (opt.op === '*') return crowd * opt.val;
+        if (opt.op === '/') return Math.floor(crowd / opt.val);
+        return crowd;
+    }
+
+    update(dt) {
+        if (this.state === 'run') {
+            this.dist += this.speed * dt;
+
+            // If adBotMode is active, steer toward the worse gate ahead!
+            if (this.adBotMode) {
+                const nextGate = this.gates.find(g => !g.passed && g.left && g.z > this.dist);
+                if (nextGate) {
+                    const leftVal = this._evalGate(this.crowd, nextGate.left);
+                    const rightVal = this._evalGate(this.crowd, nextGate.right);
+                    this.targetX = leftVal <= rightVal ? 130 : this.W - 130;
+                }
+            }
+
+            this.playerX += (this.targetX - this.playerX) * Math.min(1, dt * 14);
+
+            // Check Gates & Enemy Squads
+            for (const g of this.gates) {
+                if (g.passed) continue;
+                if (this.dist >= g.z) {
+                    g.passed = true;
+                    if (g.left && g.right) {
+                        const pickLeft = this.playerX < this.W / 2;
+                        const choice = pickLeft ? g.left : g.right;
+                        const oldCrowd = this.crowd;
+                        this.crowd = Math.max(0, this._evalGate(this.crowd, choice));
+                        const diff = this.crowd - oldCrowd;
+
+                        if (diff >= 0) {
+                            SFX.play('buff');
+                            FX.burst(this.playerX, this.playerY - 20, '#38bdf8', 16, 150);
+                            FX.floatText(this.playerX, this.playerY - 45, `${choice.text} (👥${this.crowd})`, '#10b981', 22);
+                        } else {
+                            SFX.play('hit');
+                            FX.burst(this.playerX, this.playerY - 20, '#ef4444', 16, 150);
+                            FX.floatText(this.playerX, this.playerY - 45, `${choice.text} (👥${this.crowd})`, '#ef4444', 22);
+                        }
+                    } else if (g.enemySquad) {
+                        const eq = g.enemySquad;
+                        // Check horizontal proximity to enemy squad (or unavoidable center squad)
+                        if (Math.abs(this.playerX - eq.x) < 95) {
+                            const loss = eq.count;
+                            this.crowd = Math.max(0, this.crowd - loss);
+                            SFX.play('hit');
+                            FX.burst(this.playerX, this.playerY - 20, '#ef4444', 22, 180);
+                            FX.floatText(this.playerX, this.playerY - 45, `⚔️ 交戰 -${loss}人！`, '#f97316', 20);
+                        } else {
+                            SFX.play('coin');
+                            FX.floatText(this.playerX, this.playerY - 45, '✨ 完美閃避敵軍！', '#fde047', 18);
+                        }
+                    }
+
+                    if (this.crowd <= 0) {
+                        this.state = 'fail';
+                        SFX.play('fail');
+                        setTimeout(() => this.app.showFail('全軍覆沒！隊伍人數歸零了！'), 450);
+                        return;
+                    }
+                }
+            }
+
+            // Reach Boss!
+            if (this.dist >= this.bossZ - 65) {
+                this.state = 'clash';
+                this.targetX = this.W / 2;
+            }
+        } else if (this.state === 'clash') {
+            this.playerX += (this.W / 2 - this.playerX) * Math.min(1, dt * 10);
+            this.clashTimer += dt;
+            if (this.clashTimer >= 0.045) {
+                this.clashTimer = 0;
+                const stepDmg = Math.max(1, Math.ceil(this.bossMaxHP / 28));
+                const actualDmg = Math.min(this.crowd, this.bossHP, stepDmg);
+                this.crowd -= actualDmg;
+                this.bossHP -= actualDmg;
+                SFX.play('tick');
+                FX.burst(this.W / 2 + (Math.random() - 0.5) * 60, 175 + (Math.random() - 0.5) * 40, '#f97316', 5, 110);
+
+                if (this.bossHP <= 0) {
+                    this.bossHP = 0;
+                    this.state = 'win';
+                    FX.confetti(this.W, this.H);
+                    setTimeout(() => this.app.showWin(`大軍壓境！成功擊潰巨型魔王（剩餘 ${this.crowd} 人）！`), 450);
+                } else if (this.crowd <= 0) {
+                    this.crowd = 0;
+                    this.state = 'fail';
+                    SFX.play('fail');
+                    setTimeout(() => this.app.showFail(`人數不足！魔王還剩 ${this.bossHP} 血量！`), 500);
+                }
+            }
+        }
+    }
+
+    draw(ctx) {
+        // Grass / Ocean Side Background
+        ctx.fillStyle = '#064e3b';
+        ctx.fillRect(0, 0, this.W, this.H);
+
+        // Highway Track
+        const trackLeft = 52;
+        const trackRight = this.W - 52;
+        const trackW = trackRight - trackLeft;
+
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(trackLeft, 0, trackW, this.H);
+
+        // Left & Right curbs
+        ctx.fillStyle = '#f59e0b';
+        ctx.fillRect(trackLeft - 6, 0, 6, this.H);
+        ctx.fillRect(trackRight, 0, 6, this.H);
+
+        // Scrolling lane dashes
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
+        ctx.lineWidth = 4;
+        ctx.setLineDash([24, 24]);
+        ctx.lineDashOffset = -(this.dist % 48);
+        ctx.beginPath();
+        ctx.moveTo(this.W / 2, 0);
+        ctx.lineTo(this.W / 2, this.H);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Draw Gates & Enemy Squads ahead
+        for (const g of this.gates) {
+            if (g.passed) continue;
+            const sy = this.playerY - (g.z - this.dist);
+            if (sy < -80 || sy > this.H + 60) continue;
+
+            if (g.left && g.right) {
+                const halfW = trackW / 2 - 6;
+                this._drawGatePanel(ctx, trackLeft + 4, sy - 46, halfW, 46, g.left);
+                this._drawGatePanel(ctx, this.W / 2 + 2, sy - 46, halfW, 46, g.right);
+            } else if (g.enemySquad) {
+                const eq = g.enemySquad;
+                // Draw Red Enemy Blockade
+                ctx.save();
+                ctx.fillStyle = 'rgba(239, 68, 68, 0.25)';
+                ctx.beginPath();
+                ctx.arc(eq.x, sy, 42, 0, Math.PI * 2);
+                ctx.fill();
+
+                const drawCount = Math.min(12, eq.count);
+                for (let i = 0; i < drawCount; i++) {
+                    const off = this.offsets[i];
+                    this._drawMiniRunner(ctx, eq.x + off.dx * 0.75, sy + off.dy * 0.75, '#ef4444', '#fca5a5', i);
+                }
+
+                ctx.fillStyle = '#dc2626';
+                Geom.roundRect(ctx, eq.x - 34, sy - 42, 68, 20, 6);
+                ctx.fill();
+                ctx.fillStyle = '#fff';
+                ctx.font = '900 12px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(`⚔️ -${eq.count}`, eq.x, sy - 32);
+                ctx.restore();
+            }
+        }
+
+        // Draw Boss at end of track
+        const bossY = Math.min(185, this.playerY - (this.bossZ - this.dist));
+        if (bossY > -120) {
+            ctx.save();
+            // Boss platform
+            ctx.fillStyle = 'rgba(220, 38, 38, 0.3)';
+            ctx.beginPath();
+            ctx.ellipse(this.W / 2, bossY + 15, 75, 26, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.font = '68px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            const shake = this.state === 'clash' ? (Math.random() - 0.5) * 8 : 0;
+            ctx.fillText(this.bossHP > 0 ? '👹' : '💥', this.W / 2 + shake, bossY - 10);
+
+            // Boss HP Bar
+            const bw = 150, bh = 18;
+            ctx.fillStyle = '#0f172a';
+            Geom.roundRect(ctx, this.W / 2 - bw / 2, bossY - 65, bw, bh, 8);
+            ctx.fill();
+
+            const hpRatio = Math.max(0, this.bossHP / this.bossMaxHP);
+            ctx.fillStyle = '#ef4444';
+            Geom.roundRect(ctx, this.W / 2 - bw / 2 + 2, bossY - 63, (bw - 4) * hpRatio, bh - 4, 6);
+            ctx.fill();
+
+            ctx.fillStyle = '#fff';
+            ctx.font = '900 11px sans-serif';
+            ctx.fillText(`魔王 HP: ${this.bossHP}`, this.W / 2, bossY - 56);
+            ctx.restore();
+        }
+
+        // Draw Player Blue Crowd
+        const visibleRunners = Math.min(this.crowd, 48);
+        const bobTime = this.dist * 0.06;
+        for (let i = visibleRunners - 1; i >= 0; i--) {
+            const off = this.offsets[i];
+            const bob = Math.sin(bobTime + off.phase) * 3.5;
+            const rx = Geom.clamp(this.playerX + off.dx, trackLeft + 10, trackRight - 10);
+            const ry = this.playerY + off.dy + bob;
+            this._drawMiniRunner(ctx, rx, ry, '#2563eb', '#60a5fa', i);
+        }
+
+        // Player Crowd Count Badge
+        ctx.save();
+        ctx.fillStyle = '#2563eb';
+        ctx.strokeStyle = '#fde047';
+        ctx.lineWidth = 2.5;
+        Geom.roundRect(ctx, this.playerX - 40, this.playerY - 56, 80, 26, 12);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 15px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`👥 ${this.crowd}`, this.playerX, this.playerY - 43);
+        ctx.restore();
+
+        // Top HUD Progress Bar
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+        Geom.roundRect(ctx, 16, 12, this.W - 32, 42, 10);
+        ctx.fill();
+
+        ctx.fillStyle = '#fde047';
+        ctx.font = 'bold 12px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(this.hint, this.W / 2, 26);
+
+        // Distance progress bar
+        const prog = Geom.clamp(this.dist / this.bossZ, 0, 1);
+        ctx.fillStyle = '#334155';
+        Geom.roundRect(ctx, 36, 38, this.W - 72, 8, 4);
+        ctx.fill();
+        ctx.fillStyle = '#38bdf8';
+        Geom.roundRect(ctx, 36, 38, (this.W - 72) * prog, 8, 4);
+        ctx.fill();
+    }
+
+    _drawGatePanel(ctx, x, y, w, h, gate) {
+        ctx.save();
+        const isBlue = gate.op === '+' || gate.op === '*';
+        ctx.fillStyle = isBlue ? 'rgba(37, 99, 235, 0.78)' : 'rgba(220, 38, 38, 0.78)';
+        ctx.strokeStyle = isBlue ? '#60a5fa' : '#fca5a5';
+        ctx.lineWidth = 3;
+        Geom.roundRect(ctx, x, y, w, h, 8);
+        ctx.fill();
+        ctx.stroke();
+
+        // Side posts
+        ctx.fillStyle = '#e2e8f0';
+        ctx.fillRect(x - 2, y - 4, 5, h + 8);
+        ctx.fillRect(x + w - 3, y - 4, 5, h + 8);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 24px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(gate.text, x + w / 2, y + h / 2);
+        ctx.restore();
+    }
+
+    _drawMiniRunner(ctx, x, y, bodyColor, headColor) {
+        ctx.fillStyle = 'rgba(0,0,0,0.35)';
+        ctx.beginPath();
+        ctx.ellipse(x, y + 7, 6, 3, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = bodyColor;
+        ctx.beginPath();
+        ctx.arc(x, y + 2, 6.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = headColor;
+        ctx.beginPath();
+        ctx.arc(x, y - 4.5, 5, 0, Math.PI * 2);
+        ctx.fill();
+    }
+}
+
+window.GameRegistry[3] = CrowdRunnerGame;
+
+
+// =========================================================
+// Game 4: 畫線救狗頭 (Save the Doge) — Freehand Line Physics & Bee Swarm
+// =========================================================
+
+class SaveDogeGame {
+    constructor(canvas, ctx, app) {
+        this.canvas = canvas;
+        this.ctx = ctx;
+        this.app = app;
+        this.W = canvas.width;
+        this.H = canvas.height;
+        this.level = 1;
+        this.state = 'draw'; // 'draw' | 'sim' | 'win' | 'fail'
+    }
+
+    init(level = 1) {
+        this.level = level;
+        this.state = 'draw';
+        this.timer = 6.0;
+        this.maxInk = 480;
+        this.usedInk = 0;
+        this.pts = [];
+        this.lineOffset = { x: 0, y: 0, vx: 0, vy: 0 };
+        this.bees = [];
+        this.isDrawing = false;
+
+        if (level === 1) {
+            this.hint = '一筆畫出防護罩罩住狗狗，撐過 6 秒不被蜜蜂叮！';
+            this.doge = { x: 210, y: 405, vx: 0, vy: 0, r: 28, mood: 'normal' };
+            this.platforms = [
+                { x: 95, y: 435, w: 230, h: 24 }
+            ];
+            this.hives = [
+                { x: 210, y: 120 }
+            ];
+            this.hazardY = 545;
+        } else if (level === 2) {
+            this.hint = '雙蜂巢夾擊！在窄平台上畫出穩固防線保護狗頭！';
+            this.doge = { x: 210, y: 395, vx: 0, vy: 0, r: 28, mood: 'normal' };
+            this.platforms = [
+                { x: 125, y: 425, w: 170, h: 22 },
+                { x: 45, y: 270, w: 85, h: 18 },
+                { x: 290, y: 270, w: 85, h: 18 }
+            ];
+            this.hives = [
+                { x: 105, y: 125 },
+                { x: 315, y: 125 }
+            ];
+            this.hazardY = 535;
+        } else {
+            this.hint = '高難度三蜂巢！用最省墨水的方式畫出金鐘罩！';
+            this.doge = { x: 210, y: 410, vx: 0, vy: 0, r: 28, mood: 'normal' };
+            this.platforms = [
+                { x: 135, y: 440, w: 150, h: 22 }
+            ];
+            this.hives = [
+                { x: 90, y: 140 },
+                { x: 210, y: 105 },
+                { x: 330, y: 140 }
+            ];
+            this.hazardY = 530;
+        }
+    }
+
+    // "廣告弱智操作" — draws a tiny useless squiggle next to Doge leaving him completely exposed!
+    triggerStupidAdMove() {
+        if (this.state !== 'draw') return;
+        this.pts = [];
+        // Draw two silly little cat ears high above Doge with a huge gap in the middle
+        for (let i = 0; i <= 12; i++) {
+            const t = i / 12;
+            this.pts.push({ x: 130 + t * 40, y: 340 - Math.sin(t * Math.PI) * 35 });
+        }
+        SFX.play('pin');
+        FX.floatText(this.W / 2, 180, '🤡 廣告畫法：隨便畫條破線！', '#ef4444', 20);
+        this._startSimulation();
+    }
+
+    onPointerDown(x, y) {
+        if (this.state !== 'draw') return;
+        if (y < 60) return;
+        this.isDrawing = true;
+        this.pts = [{ x, y }];
+        this.usedInk = 0;
+        SFX.play('click');
+    }
+
+    onPointerMove(x, y, isDown) {
+        if (this.state !== 'draw' || !this.isDrawing || !isDown) return;
+        const last = this.pts[this.pts.length - 1];
+        const d = Geom.dist(last.x, last.y, x, y);
+        if (d >= 8 && this.usedInk < this.maxInk) {
+            // Interpolate points every 8px so segment chain is super dense and airtight
+            const steps = Math.min(10, Math.floor(d / 8));
+            for (let i = 1; i <= steps; i++) {
+                if (this.usedInk >= this.maxInk) break;
+                const nx = last.x + ((x - last.x) * i) / steps;
+                const ny = Geom.clamp(last.y + ((y - last.y) * i) / steps, 65, this.H - 20);
+                this.pts.push({ x: nx, y: ny });
+                this.usedInk += 8;
+            }
+        }
+    }
+
+    onPointerUp() {
+        if (this.state !== 'draw' || !this.isDrawing) return;
+        this.isDrawing = false;
+        if (this.pts.length >= 3) {
+            this._startSimulation();
+        } else {
+            this.pts = [];
+            this.usedInk = 0;
+        }
+    }
+
+    _startSimulation() {
+        this.state = 'sim';
+        this.bees = [];
+        const beesPerHive = this.level === 1 ? 6 : (this.level === 2 ? 5 : 4);
+        for (const h of this.hives) {
+            for (let i = 0; i < beesPerHive; i++) {
+                const angle = (Math.PI * 2 * i) / beesPerHive;
+                this.bees.push({
+                    x: h.x + Math.cos(angle) * 14,
+                    y: h.y + Math.sin(angle) * 14,
+                    vx: Math.cos(angle) * 90,
+                    vy: Math.sin(angle) * 90,
+                    r: 11,
+                    buzzPhase: Math.random() * Math.PI * 2
+                });
+            }
+        }
+        SFX.play('sizzle');
+    }
+
+    update(dt) {
+        if (this.state !== 'sim') return;
+
+        this.timer -= dt;
+        if (this.timer <= 0) {
+            this.timer = 0;
+            this.state = 'win';
+            this.doge.mood = 'cool';
+            FX.confetti(this.W, this.H);
+            setTimeout(() => this.app.showWin('完美防禦！狗狗毫髮無傷撐過蜜蜂圍攻！'), 450);
+            return;
+        }
+
+        const subSteps = 4;
+        const subDt = dt / subSteps;
+        for (let s = 0; s < subSteps; s++) {
+            this._stepSim(subDt);
+            if (this.state !== 'sim') return;
+        }
+    }
+
+    _stepSim(dt) {
+        // 1. Update drawn line rigid body gravity & platform support
+        this.lineOffset.vy += 260 * dt;
+        this.lineOffset.vx *= 0.94;
+        this.lineOffset.vy = Math.min(this.lineOffset.vy, 240);
+
+        let nextOx = this.lineOffset.x + this.lineOffset.vx * dt;
+        let nextOy = this.lineOffset.y + this.lineOffset.vy * dt;
+
+        // Check if any point on the drawn line hits a platform or canvas border
+        for (const p of this.pts) {
+            const wx = p.x + nextOx;
+            const wy = p.y + nextOy;
+
+            if (wx < 12) { nextOx = 12 - p.x; this.lineOffset.vx = 0; }
+            if (wx > this.W - 12) { nextOx = this.W - 12 - p.x; this.lineOffset.vx = 0; }
+
+            for (const plat of this.platforms) {
+                if (wx >= plat.x - 4 && wx <= plat.x + plat.w + 4 &&
+                    wy >= plat.y - 5 && wy <= plat.y + plat.h) {
+                    if (p.y + this.lineOffset.y <= plat.y + 4) {
+                        nextOy = plat.y - 5 - p.y;
+                        this.lineOffset.vy = 0;
+                        this.lineOffset.vx *= 0.8;
+                    }
+                }
+            }
+        }
+        this.lineOffset.x = nextOx;
+        this.lineOffset.y = nextOy;
+
+        // 2. Update Doge physics (rests on platform)
+        this.doge.vy += 420 * dt;
+        this.doge.x += this.doge.vx * dt;
+        this.doge.y += this.doge.vy * dt;
+        this.doge.vx *= 0.92;
+
+        for (const plat of this.platforms) {
+            if (this.doge.x >= plat.x - 10 && this.doge.x <= plat.x + plat.w + 10) {
+                if (this.doge.y + this.doge.r >= plat.y && this.doge.y - this.doge.r < plat.y + 10 && this.doge.vy >= 0) {
+                    this.doge.y = plat.y - this.doge.r;
+                    this.doge.vy = 0;
+                }
+            }
+        }
+
+        // Check if Doge fell into the bottom hazard
+        if (this.doge.y + this.doge.r >= this.hazardY) {
+            this.doge.mood = 'stung';
+            this.state = 'fail';
+            SFX.play('fail');
+            FX.burst(this.doge.x, this.doge.y, '#ef4444', 20, 170);
+            setTimeout(() => this.app.showFail('狗狗掉進深淵酸液池裡了！'), 500);
+            return;
+        }
+
+        // 3. Update Bees
+        let minBeeDist = 999;
+        for (const b of this.bees) {
+            b.buzzPhase += 18 * dt;
+            // Homing acceleration toward Doge + erratic bee wobble
+            const dx = this.doge.x - b.x;
+            const dy = this.doge.y - b.y;
+            const d = Math.hypot(dx, dy) || 1;
+            minBeeDist = Math.min(minBeeDist, d);
+
+            const accel = 420;
+            b.vx += (dx / d) * accel * dt + Math.cos(b.buzzPhase) * 180 * dt;
+            b.vy += (dy / d) * accel * dt + Math.sin(b.buzzPhase * 1.3) * 180 * dt;
+
+            // Clamp bee max speed
+            const spd = Math.hypot(b.vx, b.vy);
+            if (spd > 210) {
+                b.vx = (b.vx / spd) * 210;
+                b.vy = (b.vy / spd) * 210;
+            }
+
+            b.x += b.vx * dt;
+            b.y += b.vy * dt;
+
+            // Keep bees inside screen bounds
+            if (b.x < 18) { b.x = 18; b.vx = Math.abs(b.vx); }
+            if (b.x > this.W - 18) { b.x = this.W - 18; b.vx = -Math.abs(b.vx); }
+            if (b.y < 65) { b.y = 65; b.vy = Math.abs(b.vy); }
+
+            // Bee vs Platform collision
+            for (const plat of this.platforms) {
+                const cx = Geom.clamp(b.x, plat.x, plat.x + plat.w);
+                const cy = Geom.clamp(b.y, plat.y, plat.y + plat.h);
+                const pd = Geom.dist(b.x, b.y, cx, cy);
+                if (pd < b.r) {
+                    const nx = pd > 0.001 ? (b.x - cx) / pd : 0;
+                    const ny = pd > 0.001 ? (b.y - cy) / pd : -1;
+                    b.x += nx * (b.r - pd);
+                    b.y += ny * (b.r - pd);
+                    const vn = b.vx * nx + b.vy * ny;
+                    if (vn < 0) {
+                        b.vx -= 1.8 * vn * nx;
+                        b.vy -= 1.8 * vn * ny;
+                    }
+                }
+            }
+
+            // Bee vs Drawn Line Segments collision
+            for (let i = 0; i < this.pts.length - 1; i++) {
+                const ax = this.pts[i].x + this.lineOffset.x;
+                const ay = this.pts[i].y + this.lineOffset.y;
+                const bx = this.pts[i + 1].x + this.lineOffset.x;
+                const by = this.pts[i + 1].y + this.lineOffset.y;
+
+                const hit = Geom.circleSegmentCollide(b.x, b.y, b.r, ax, ay, bx, by, 6);
+                if (hit.hit) {
+                    b.x += hit.nx * hit.depth;
+                    b.y += hit.ny * hit.depth;
+                    const vn = b.vx * hit.nx + b.vy * hit.ny;
+                    if (vn < 0) {
+                        b.vx -= 1.85 * vn * hit.nx;
+                        b.vy -= 1.85 * vn * hit.ny;
+                        // Slight physical push on the line shield
+                        this.lineOffset.vx -= hit.nx * 4;
+                    }
+                }
+            }
+
+            // Check if Bee stung Doge!
+            if (Geom.dist(b.x, b.y, this.doge.x, this.doge.y) < b.r + this.doge.r - 4) {
+                this.doge.mood = 'stung';
+                this.state = 'fail';
+                SFX.play('hit');
+                FX.burst(this.doge.x, this.doge.y, '#ef4444', 24, 180);
+                FX.floatText(this.doge.x, this.doge.y - 38, '🐝 滿頭包！救援失敗！', '#ef4444', 22);
+                setTimeout(() => this.app.showFail('防線有漏洞！蜜蜂鑽進去把狗頭叮成豬頭了！'), 550);
+                return;
+            }
+        }
+
+        this.doge.mood = minBeeDist < 95 ? 'sweat' : 'normal';
+    }
+
+    draw(ctx) {
+        // Sunny Pasture Sky Background
+        const bg = ctx.createLinearGradient(0, 0, 0, this.H);
+        bg.addColorStop(0, '#0284c7');
+        bg.addColorStop(0.7, '#38bdf8');
+        bg.addColorStop(1, '#bae6fd');
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, this.W, this.H);
+
+        // Bottom Poison/Acid Hazard Pool
+        ctx.fillStyle = '#16a34a';
+        ctx.fillRect(0, this.hazardY, this.W, this.H - this.hazardY);
+        ctx.fillStyle = '#4ade80';
+        ctx.fillRect(0, this.hazardY, this.W, 6);
+        ctx.fillStyle = '#dcfce7';
+        ctx.font = 'bold 12px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('☠️ 劇毒酸液池 ☠️', this.W / 2, this.hazardY + 26);
+
+        // Draw Stone Platforms
+        for (const p of this.platforms) {
+            ctx.fillStyle = '#475569';
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 3;
+            Geom.roundRect(ctx, p.x, p.y, p.w, p.h, 6);
+            ctx.fill();
+            ctx.stroke();
+
+            // Grass top on platform
+            ctx.fillStyle = '#22c55e';
+            Geom.roundRect(ctx, p.x, p.y, p.w, 7, 4);
+            ctx.fill();
+        }
+
+        // Draw Dotted Guide Hint in Level 1 while in 'draw' state
+        if (this.state === 'draw' && this.pts.length === 0) {
+            ctx.save();
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.65)';
+            ctx.lineWidth = 4;
+            ctx.setLineDash([8, 8]);
+            ctx.beginPath();
+            ctx.arc(this.doge.x, this.doge.y + 8, 68, Math.PI, 0, false);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 13px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('👆 按住滑鼠/手指畫弧線罩住狗頭', this.doge.x, this.doge.y - 72);
+            ctx.restore();
+        }
+
+        // Draw Beehives
+        for (const h of this.hives) {
+            ctx.save();
+            ctx.fillStyle = '#f59e0b';
+            ctx.strokeStyle = '#78350f';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.ellipse(h.x, h.y, 26, 30, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            // Hive stripes & hole
+            ctx.fillStyle = '#451a03';
+            ctx.beginPath();
+            ctx.arc(h.x, h.y + 6, 8, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+
+        // Draw Doge Head (Custom Shiba Inu + Expression)
+        this._drawDoge(ctx, this.doge.x, this.doge.y, this.doge.r, this.doge.mood);
+
+        // Draw Drawn Barrier Line
+        if (this.pts.length >= 2) {
+            ctx.save();
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            // Outer dark outline
+            ctx.strokeStyle = '#0f172a';
+            ctx.lineWidth = 12;
+            ctx.beginPath();
+            ctx.moveTo(this.pts[0].x + this.lineOffset.x, this.pts[0].y + this.lineOffset.y);
+            for (let i = 1; i < this.pts.length; i++) {
+                ctx.lineTo(this.pts[i].x + this.lineOffset.x, this.pts[i].y + this.lineOffset.y);
+            }
+            ctx.stroke();
+
+            // Inner golden rope core
+            ctx.strokeStyle = '#fde047';
+            ctx.lineWidth = 6;
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        // Draw Bees
+        for (const b of this.bees) {
+            ctx.save();
+            ctx.translate(b.x, b.y);
+            // Wing flutter
+            ctx.fillStyle = 'rgba(255,255,255,0.85)';
+            ctx.beginPath();
+            ctx.ellipse(-4, -9, 6, 4, -0.4, 0, Math.PI * 2);
+            ctx.ellipse(4, -9, 6, 4, 0.4, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Bee body
+            ctx.fillStyle = '#facc15';
+            ctx.strokeStyle = '#0f172a';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(0, 0, b.r, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            // Black stripe & angry eyes
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(-3, -b.r + 2, 5, b.r * 2 - 4);
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.arc(5, -2, 2.2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+
+        // Top HUD Banner (Ink Bar + Countdown Clock)
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+        Geom.roundRect(ctx, 16, 12, this.W - 32, 46, 10);
+        ctx.fill();
+
+        ctx.fillStyle = '#fde047';
+        ctx.font = 'bold 12px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(this.hint, 28, 28);
+
+        // Ink Bar
+        const inkRatio = Math.max(0, 1 - this.usedInk / this.maxInk);
+        ctx.fillStyle = '#334155';
+        Geom.roundRect(ctx, 28, 38, 220, 10, 5);
+        ctx.fill();
+        ctx.fillStyle = inkRatio > 0.25 ? '#38bdf8' : '#ef4444';
+        Geom.roundRect(ctx, 28, 38, 220 * inkRatio, 10, 5);
+        ctx.fill();
+
+        // Countdown Badge on Right
+        ctx.fillStyle = this.state === 'sim' ? '#ef4444' : '#10b981';
+        Geom.roundRect(ctx, this.W - 102, 18, 76, 34, 8);
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 16px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`⏱️ ${this.timer.toFixed(1)}s`, this.W - 64, 35);
+    }
+
+    _drawDoge(ctx, x, y, r, mood) {
+        ctx.save();
+        ctx.translate(x, y);
+
+        // Shiba Ears
+        ctx.fillStyle = '#d97706';
+        ctx.strokeStyle = '#78350f';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(-r * 0.8, -r * 0.3);
+        ctx.lineTo(-r * 0.95, -r * 1.15);
+        ctx.lineTo(-r * 0.2, -r * 0.85);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(r * 0.8, -r * 0.3);
+        ctx.lineTo(r * 0.95, -r * 1.15);
+        ctx.lineTo(r * 0.2, -r * 0.85);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Shiba Head Circle
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath();
+        ctx.arc(0, 0, r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // White Cheeks / Snout
+        ctx.fillStyle = '#fef3c7';
+        ctx.beginPath();
+        ctx.ellipse(0, r * 0.25, r * 0.72, r * 0.55, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Expressive Face Overlay
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.font = '28px sans-serif';
+        if (mood === 'stung') {
+            // Big swollen red bump on head!
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.arc(0, -r - 4, 11, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillText('😭', 0, 2);
+        } else if (mood === 'sweat') {
+            ctx.fillText('😰', 0, 2);
+        } else if (mood === 'cool') {
+            ctx.fillText('😎', 0, 2);
+        } else {
+            // Classic Doge smirk eyes & nose
+            ctx.fillStyle = '#0f172a';
+            ctx.beginPath();
+            ctx.arc(-9, -4, 3.5, 0, Math.PI * 2);
+            ctx.arc(9, -4, 3.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(0, 4, 5, 3.5, 0, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.restore();
+    }
+}
+
+window.GameRegistry[4] = SaveDogeGame;
+
+
+// =========================================================
+// Game 5: 螺絲拆解 (Screw Jam) — Layered Plates, Toolbox Queue & Buffer Holes
+// =========================================================
+
+const SCREW_COLORS = {
+    red:    { fill: '#ef4444', stroke: '#991b1b', light: '#fca5a5', name: '紅' },
+    blue:   { fill: '#3b82f6', stroke: '#1e40af', light: '#93c5fd', name: '藍' },
+    green:  { fill: '#10b981', stroke: '#065f46', light: '#6ee7b7', name: '綠' },
+    yellow: { fill: '#f59e0b', stroke: '#92400e', light: '#fde047', name: '黃' },
+    purple: { fill: '#a855f7', stroke: '#581c87', light: '#d8b4fe', name: '紫' }
+};
+
+class ScrewJamGame {
+    constructor(canvas, ctx, app) {
+        this.canvas = canvas;
+        this.ctx = ctx;
+        this.app = app;
+        this.W = canvas.width;
+        this.H = canvas.height;
+        this.level = 1;
+        this.state = 'play';
+    }
+
+    init(level = 1) {
+        this.level = level;
+        this.state = 'play';
+        this.buffer = [null, null, null, null, null]; // 5 buffer holes
+        this.boxSlots = []; // current box screws (up to 3)
+        this.plates = [];
+        this.screws = [];
+        this.shakeScrewId = null;
+        this.shakeTimer = 0;
+
+        if (level === 1) {
+            this.hint = '拆下對應顏色的螺絲裝滿工具盒，別讓 5 個備用孔塞滿！';
+            this.boxQueue = ['red', 'blue', 'green'];
+            this.plates = [
+                { id: 1, x: 70, y: 225, w: 280, h: 76, color: 'rgba(56, 189, 248, 0.35)', border: '#38bdf8', layer: 0, falling: false, vy: 0, rot: 0 },
+                { id: 2, x: 70, y: 330, w: 280, h: 76, color: 'rgba(16, 185, 129, 0.35)', border: '#10b981', layer: 0, falling: false, vy: 0, rot: 0 },
+                { id: 3, x: 115, y: 245, w: 190, h: 140, color: 'rgba(245, 158, 11, 0.45)', border: '#f59e0b', layer: 1, falling: false, vy: 0, rot: 0 }
+            ];
+            // 3 red, 3 blue, 3 green = 9 screws total
+            this.screws = [
+                // Lower layer plates (some covered by Plate 3 until Plate 3 falls!)
+                { id: 1, x: 98,  y: 263, color: 'red',   plates: [1] },
+                { id: 2, x: 210, y: 263, color: 'blue',  plates: [1] }, // covered by Plate 3!
+                { id: 3, x: 322, y: 263, color: 'green', plates: [1] },
+
+                { id: 4, x: 98,  y: 368, color: 'blue',  plates: [2] },
+                { id: 5, x: 210, y: 368, color: 'green', plates: [2] }, // covered by Plate 3!
+                { id: 6, x: 322, y: 368, color: 'green', plates: [2] },
+
+                // Upper layer Plate 3 (accessible immediately)
+                { id: 7, x: 155, y: 285, color: 'red',   plates: [3] },
+                { id: 8, x: 265, y: 285, color: 'red',   plates: [3] },
+                { id: 9, x: 210, y: 345, color: 'blue',  plates: [3] }
+            ];
+        } else if (level === 2) {
+            this.hint = '雙層交叉鐵板！先拆開上層金色鐵板釋放被壓住的螺絲！';
+            this.boxQueue = ['yellow', 'red', 'blue', 'green'];
+            this.plates = [
+                { id: 1, x: 60,  y: 215, w: 140, h: 210, color: 'rgba(59, 130, 246, 0.35)', border: '#60a5fa', layer: 0, falling: false, vy: 0, rot: 0 },
+                { id: 2, x: 220, y: 215, w: 140, h: 210, color: 'rgba(168, 85, 247, 0.35)', border: '#c084fc', layer: 0, falling: false, vy: 0, rot: 0 },
+                { id: 3, x: 85,  y: 235, w: 250, h: 75,  color: 'rgba(245, 158, 11, 0.48)', border: '#fde047', layer: 1, falling: false, vy: 0, rot: 0 },
+                { id: 4, x: 85,  y: 335, w: 250, h: 75,  color: 'rgba(236, 72, 153, 0.48)', border: '#f472b6', layer: 1, falling: false, vy: 0, rot: 0 }
+            ];
+            // 3 yellow, 3 red, 3 blue, 3 green = 12 screws
+            this.screws = [
+                // Layer 0 screws (some under Plate 3 & Plate 4)
+                { id: 1,  x: 130, y: 272, color: 'red',    plates: [1] }, // under Plate 3
+                { id: 2,  x: 130, y: 320, color: 'yellow', plates: [1] }, // exposed between Plate 3 & 4
+                { id: 3,  x: 130, y: 372, color: 'blue',   plates: [1] }, // under Plate 4
+
+                { id: 4,  x: 290, y: 272, color: 'red',    plates: [2] }, // under Plate 3
+                { id: 5,  x: 290, y: 320, color: 'blue',   plates: [2] }, // exposed
+                { id: 6,  x: 290, y: 372, color: 'green',  plates: [2] }, // under Plate 4
+
+                // Layer 1 Plate 3 screws
+                { id: 7,  x: 115, y: 272, color: 'yellow', plates: [3] },
+                { id: 8,  x: 210, y: 272, color: 'yellow', plates: [3] },
+                { id: 9,  x: 305, y: 272, color: 'red',    plates: [3] },
+
+                // Layer 1 Plate 4 screws
+                { id: 10, x: 115, y: 372, color: 'blue',   plates: [4] },
+                { id: 11, x: 210, y: 372, color: 'green',  plates: [4] },
+                { id: 12, x: 305, y: 372, color: 'green',  plates: [4] }
+            ];
+        } else {
+            this.hint = '大師級五色螺絲陣！善用備用孔暫存螺絲，依序解鎖三層結構！';
+            this.boxQueue = ['purple', 'yellow', 'red', 'blue', 'green'];
+            this.plates = [
+                { id: 1, x: 55,  y: 210, w: 310, h: 70,  color: 'rgba(16, 185, 129, 0.32)', border: '#34d399', layer: 0, falling: false, vy: 0, rot: 0 },
+                { id: 2, x: 55,  y: 300, w: 310, h: 70,  color: 'rgba(59, 130, 246, 0.32)', border: '#60a5fa', layer: 0, falling: false, vy: 0, rot: 0 },
+                { id: 3, x: 55,  y: 390, w: 310, h: 70,  color: 'rgba(239, 68, 68, 0.32)',  border: '#f87171', layer: 0, falling: false, vy: 0, rot: 0 },
+                { id: 4, x: 95,  y: 225, w: 105, h: 220, color: 'rgba(168, 85, 247, 0.48)', border: '#c084fc', layer: 1, falling: false, vy: 0, rot: 0 },
+                { id: 5, x: 220, y: 225, w: 105, h: 220, color: 'rgba(245, 158, 11, 0.48)', border: '#fde047', layer: 1, falling: false, vy: 0, rot: 0 }
+            ];
+            // 3 purple, 3 yellow, 3 red, 3 blue, 3 green = 15 screws
+            this.screws = [
+                // Layer 0 exposed outer screws + covered middle screws
+                { id: 1,  x: 75,  y: 245, color: 'purple', plates: [1] },
+                { id: 2,  x: 147, y: 245, color: 'red',    plates: [1] }, // covered by Plate 4
+                { id: 3,  x: 345, y: 245, color: 'yellow', plates: [1] },
+
+                { id: 4,  x: 75,  y: 335, color: 'red',    plates: [2] },
+                { id: 5,  x: 272, y: 335, color: 'blue',   plates: [2] }, // covered by Plate 5
+                { id: 6,  x: 345, y: 335, color: 'green',  plates: [2] },
+
+                { id: 7,  x: 75,  y: 425, color: 'blue',   plates: [3] },
+                { id: 8,  x: 147, y: 425, color: 'green',  plates: [3] }, // covered by Plate 4
+                { id: 9,  x: 345, y: 425, color: 'green',  plates: [3] },
+
+                // Layer 1 Plate 4 screws
+                { id: 10, x: 147, y: 265, color: 'purple', plates: [4] },
+                { id: 11, x: 147, y: 335, color: 'purple', plates: [4] },
+                { id: 12, x: 147, y: 400, color: 'yellow', plates: [4] },
+
+                // Layer 1 Plate 5 screws
+                { id: 13, x: 272, y: 265, color: 'yellow', plates: [5] },
+                { id: 14, x: 272, y: 315, color: 'red',    plates: [5] },
+                { id: 15, x: 272, y: 400, color: 'blue',   plates: [5] }
+            ];
+        }
+
+        this.currentBoxColor = this.boxQueue.shift();
+    }
+
+    isScrewBlocked(screw) {
+        const screwLayer = Math.max(...screw.plates.map(pid => {
+            const p = this.plates.find(pl => pl.id === pid);
+            return p ? p.layer : 0;
+        }));
+
+        for (const p of this.plates) {
+            if (p.falling || p.layer <= screwLayer) continue;
+            // Check if upper plate rectangle covers this screw
+            if (screw.x + 10 > p.x && screw.x - 10 < p.x + p.w &&
+                screw.y + 10 > p.y && screw.y - 10 < p.y + p.h) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // "廣告弱智操作" — deliberately pulls non-matching screws until all 5 buffer slots jam!
+    triggerStupidAdMove() {
+        if (this.state !== 'play') return;
+        FX.floatText(this.W / 2, 180, '🤡 廣告操作：完全不看顏色亂拔一通！', '#ef4444', 18);
+        // Fill buffer with wrong colors intentionally
+        for (let i = 0; i < 5; i++) {
+            const wrong = this.screws.find(s => !this.isScrewBlocked(s) && s.color !== this.currentBoxColor);
+            if (wrong) {
+                this._removeScrew(wrong);
+                if (this.state !== 'play') break;
+            }
+        }
+        // If still playing, fill remaining buffer slots to force jam
+        while (this.state === 'play' && this.buffer.includes(null)) {
+            const idx = this.buffer.indexOf(null);
+            this.buffer[idx] = { color: 'green' };
+        }
+        if (this.state === 'play') {
+            this.state = 'fail';
+            SFX.play('fail');
+            setTimeout(() => this.app.showFail('備用孔位全部塞滿！亂拔螺絲導致卡死啦！'), 450);
+        }
+    }
+
+    onPointerDown(x, y) {
+        if (this.state !== 'play') return;
+        // Iterate from top-most screw down
+        for (let i = this.screws.length - 1; i >= 0; i--) {
+            const s = this.screws[i];
+            if (Geom.dist(x, y, s.x, s.y) <= 20) {
+                if (this.isScrewBlocked(s)) {
+                    this.shakeScrewId = s.id;
+                    this.shakeTimer = 0.35;
+                    SFX.play('hit');
+                    FX.floatText(s.x, s.y - 20, '🔒 被上層鐵板擋住！', '#f59e0b', 15);
+                    return;
+                }
+                this._removeScrew(s);
+                return;
+            }
+        }
+    }
+
+    _removeScrew(screw) {
+        const idx = this.screws.indexOf(screw);
+        if (idx === -1) return;
+        this.screws.splice(idx, 1);
+        SFX.play('screw');
+        FX.burst(screw.x, screw.y, SCREW_COLORS[screw.color].fill, 10, 120);
+
+        // Check if any plate now has 0 screws left
+        for (const p of this.plates) {
+            if (!p.falling) {
+                const remaining = this.screws.some(s => s.plates.includes(p.id));
+                if (!remaining) {
+                    p.falling = true;
+                    p.vy = 40;
+                    p.vr = (Math.random() - 0.5) * 2.5;
+                    SFX.play('coin');
+                    FX.floatText(p.x + p.w / 2, p.y + p.h / 2, '鐵板卸除！', '#38bdf8', 18);
+                }
+            }
+        }
+
+        // Route screw to Current Target Box or Buffer
+        if (screw.color === this.currentBoxColor) {
+            this.boxSlots.push(screw.color);
+            this._checkBoxFull();
+        } else {
+            const emptyIdx = this.buffer.indexOf(null);
+            if (emptyIdx !== -1) {
+                this.buffer[emptyIdx] = { color: screw.color };
+                // Check if all 5 buffer slots are now full
+                if (!this.buffer.includes(null)) {
+                    this.state = 'fail';
+                    SFX.play('fail');
+                    setTimeout(() => this.app.showFail('5 個備用孔位全部塞滿，無法繼續拆卸！'), 500);
+                }
+            }
+        }
+    }
+
+    _checkBoxFull() {
+        while (this.boxSlots.length >= 3) {
+            this.boxSlots = [];
+            SFX.play('buff');
+            FX.burst(this.W / 2, 100, '#fde047', 18, 160);
+            FX.floatText(this.W / 2, 85, '📦 工具盒裝滿！', '#10b981', 20);
+
+            if (this.boxQueue.length > 0) {
+                this.currentBoxColor = this.boxQueue.shift();
+                // Auto-pull matching screws from buffer into the new box!
+                for (let i = 0; i < this.buffer.length; i++) {
+                    if (this.buffer[i] && this.buffer[i].color === this.currentBoxColor && this.boxSlots.length < 3) {
+                        this.boxSlots.push(this.buffer[i].color);
+                        this.buffer[i] = null;
+                    }
+                }
+            } else {
+                this.currentBoxColor = null;
+                this.state = 'win';
+                FX.confetti(this.W, this.H);
+                setTimeout(() => this.app.showWin('全數拆卸完畢！所有螺絲完美歸位！'), 450);
+                return;
+            }
+        }
+    }
+
+    update(dt) {
+        if (this.shakeTimer > 0) {
+            this.shakeTimer -= dt;
+            if (this.shakeTimer <= 0) this.shakeScrewId = null;
+        }
+
+        for (const p of this.plates) {
+            if (p.falling && p.y < this.H + 150) {
+                p.vy += 720 * dt;
+                p.y += p.vy * dt;
+                p.rot += (p.vr || 1) * dt;
+            }
+        }
+    }
+
+    draw(ctx) {
+        // Workshop Pegboard Background
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(0, 0, this.W, this.H);
+
+        ctx.fillStyle = 'rgba(255,255,255,0.05)';
+        for (let x = 25; x < this.W; x += 28) {
+            for (let y = 190; y < this.H - 20; y += 28) {
+                ctx.beginPath();
+                ctx.arc(x, y, 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // Top Hint Banner
+        ctx.fillStyle = 'rgba(30, 41, 59, 0.9)';
+        Geom.roundRect(ctx, 14, 10, this.W - 28, 32, 8);
+        ctx.fill();
+        ctx.fillStyle = '#fde047';
+        ctx.font = 'bold 12px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(this.hint, this.W / 2, 26);
+
+        // Draw Current Target Toolbox (y = 50..122)
+        if (this.currentBoxColor) {
+            const cInfo = SCREW_COLORS[this.currentBoxColor];
+            const bx = 55, by = 50, bw = 205, bh = 68;
+            ctx.fillStyle = cInfo.stroke;
+            ctx.strokeStyle = cInfo.light;
+            ctx.lineWidth = 3;
+            Geom.roundRect(ctx, bx, by, bw, bh, 12);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#fff';
+            ctx.font = '900 13px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(`目標工具盒 (${cInfo.name}色螺絲)`, bx + bw / 2, by + 16);
+
+            // 3 Slots inside Toolbox
+            for (let i = 0; i < 3; i++) {
+                const sx = bx + 48 + i * 54;
+                const sy = by + 44;
+                ctx.fillStyle = 'rgba(0,0,0,0.45)';
+                ctx.beginPath();
+                ctx.arc(sx, sy, 15, 0, Math.PI * 2);
+                ctx.fill();
+
+                if (i < this.boxSlots.length) {
+                    this._drawScrewHead(ctx, sx, sy, 14, this.boxSlots[i], false);
+                }
+            }
+
+            // Next Box Preview on Right
+            const nx = 275, ny = 56, nw = 95, nh = 56;
+            ctx.fillStyle = '#1e293b';
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 2;
+            Geom.roundRect(ctx, nx, ny, nw, nh, 10);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = 'bold 11px sans-serif';
+            ctx.fillText(`下一盒 (剩${this.boxQueue.length})`, nx + nw / 2, ny + 15);
+
+            if (this.boxQueue.length > 0) {
+                const nextC = SCREW_COLORS[this.boxQueue[0]];
+                ctx.fillStyle = nextC.fill;
+                Geom.roundRect(ctx, nx + 20, ny + 26, nw - 40, 20, 6);
+                ctx.fill();
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 11px sans-serif';
+                ctx.fillText(`${nextC.name}色盒`, nx + nw / 2, ny + 36);
+            } else {
+                ctx.fillStyle = '#10b981';
+                ctx.font = 'bold 12px sans-serif';
+                ctx.fillText('最後一盒！', nx + nw / 2, ny + 36);
+            }
+        }
+
+        // Draw 5 Buffer Waiting Holes Bar (y = 128..182)
+        const barX = 48, barY = 128, barW = this.W - 96, barH = 52;
+        ctx.fillStyle = '#1e293b';
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = 2;
+        Geom.roundRect(ctx, barX, barY, barW, barH, 10);
+        ctx.fill();
+        ctx.stroke();
+
+        for (let i = 0; i < 5; i++) {
+            const hx = barX + 38 + i * 62;
+            const hy = barY + 26;
+            ctx.fillStyle = '#0f172a';
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(hx, hy, 16, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            if (this.buffer[i]) {
+                this._drawScrewHead(ctx, hx, hy, 14, this.buffer[i].color, false);
+            }
+        }
+
+        // Draw Plates sorted by layer (layer 0 first, then layer 1)
+        const sortedPlates = [...this.plates].sort((a, b) => a.layer - b.layer);
+        for (const p of sortedPlates) {
+            if (p.y > this.H + 120) continue;
+            ctx.save();
+            const cx = p.x + p.w / 2;
+            const cy = p.y + p.h / 2;
+            ctx.translate(cx, cy);
+            if (p.rot) ctx.rotate(p.rot);
+
+            ctx.fillStyle = p.color;
+            ctx.strokeStyle = p.border;
+            ctx.lineWidth = 3.5;
+            Geom.roundRect(ctx, -p.w / 2, -p.h / 2, p.w, p.h, 14);
+            ctx.fill();
+            ctx.stroke();
+
+            // Metallic shine diagonal line
+            ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(-p.w / 2 + 12, -p.h / 2 + 6);
+            ctx.lineTo(p.w / 2 - 12, -p.h / 2 + 6);
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        // Draw Screws
+        for (const s of this.screws) {
+            const blocked = this.isScrewBlocked(s);
+            const shake = this.shakeScrewId === s.id ? Math.sin(this.shakeTimer * 55) * 5 : 0;
+            this._drawScrewHead(ctx, s.x + shake, s.y, 16, s.color, blocked);
+        }
+    }
+
+    _drawScrewHead(ctx, x, y, r, colorKey, blocked) {
+        const c = SCREW_COLORS[colorKey];
+        ctx.save();
+        ctx.translate(x, y);
+
+        // Drop shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.45)';
+        ctx.beginPath();
+        ctx.arc(0, 3, r, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Outer metallic rim
+        ctx.fillStyle = c.fill;
+        ctx.strokeStyle = blocked ? '#475569' : '#ffffff';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.arc(0, 0, r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // Phillips cross slot (+)
+        ctx.strokeStyle = c.stroke;
+        ctx.lineWidth = 3.2;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(-r * 0.48, 0);
+        ctx.lineTo(r * 0.48, 0);
+        ctx.moveTo(0, -r * 0.48);
+        ctx.lineTo(0, r * 0.48);
+        ctx.stroke();
+
+        if (blocked) {
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.55)';
+            ctx.beginPath();
+            ctx.arc(0, 0, r, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.font = '12px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('🔒', 0, 1);
+        }
+        ctx.restore();
+    }
+}
+
+window.GameRegistry[5] = ScrewJamGame;
+
+
+// =========================================================
+// Game 6: 滿足系清潔 (Power Washer) — High-Pressure Water Jet & ASMR Erasing
+// =========================================================
+
+class PowerWasherGame {
+    constructor(canvas, ctx, app) {
+        this.canvas = canvas;
+        this.ctx = ctx;
+        this.app = app;
+        this.W = canvas.width;
+        this.H = canvas.height;
+        this.level = 1;
+        this.state = 'play';
+    }
+
+    init(level = 1) {
+        this.level = level;
+        this.state = 'play';
+        this.box = { x: 50, y: 105, w: 320, h: 340 };
+        this.cleanPercent = 0;
+        this.isSpraying = false;
+        this.aimX = this.W / 2;
+        this.aimY = this.box.y + this.box.h / 2;
+        this.lastX = null;
+        this.lastY = null;
+        this.foams = [];
+        this.sampleCooldown = 0;
+
+        // Virtual 32x34 cleanliness grid (10px per cell) for rock-solid progress tracking
+        this.gridCols = 32;
+        this.gridRows = 34;
+        this.dirtyGrid = new Uint8Array(this.gridCols * this.gridRows);
+        this.dirtyGrid.fill(1);
+
+        // Offscreen dirt canvas
+        if (typeof document !== 'undefined' && document.createElement) {
+            this.dirtCanvas = document.createElement('canvas');
+            this.dirtCanvas.width = this.W;
+            this.dirtCanvas.height = this.H;
+            this.dctx = this.dirtCanvas.getContext('2d');
+            this._renderDirtLayer();
+        } else {
+            this.dirtCanvas = null;
+            this.dctx = null;
+        }
+
+        if (level === 1) {
+            this.hint = '按住滑動水槍，把沾滿泥巴的傳奇超跑沖洗乾淨！';
+            this.itemTitle = '🏎️ 限量黃金超跑';
+        } else if (level === 2) {
+            this.hint = '強迫症舒壓！把百年污垢的皇家波斯地毯洗出原本花紋！';
+            this.itemTitle = '🧶 皇家波斯地毯';
+        } else {
+            this.hint = '終極深層清潔！洗淨青苔與老泥，讓遠古黃金聖物重現光芒！';
+            this.itemTitle = '👑 法老黃金寶藏';
+        }
+    }
+
+    _renderDirtLayer() {
+        if (!this.dctx) return;
+        const dctx = this.dctx;
+        const { x, y, w, h } = this.box;
+        dctx.clearRect(0, 0, this.W, this.H);
+
+        dctx.save();
+        Geom.roundRect(dctx, x, y, w, h, 18);
+        dctx.clip();
+
+        // Base thick grime layer
+        dctx.fillStyle = this.level === 3 ? '#365314' : '#451a03';
+        dctx.fillRect(x, y, w, h);
+
+        // Organic mud/moss blotches
+        const colors = this.level === 3
+            ? ['#3f6212', '#4d7c0f', '#1a2e05', '#713f12']
+            : ['#78350f', '#5c2d0c', '#291507', '#92400e'];
+
+        for (let i = 0; i < 95; i++) {
+            dctx.fillStyle = colors[i % colors.length];
+            const bx = x + (i * 37) % w;
+            const by = y + (i * 53) % h;
+            const br = 18 + (i % 24);
+            dctx.beginPath();
+            dctx.arc(bx, by, br, 0, Math.PI * 2);
+            dctx.fill();
+        }
+
+        // Muddy text prompt on the dirt itself
+        dctx.fillStyle = 'rgba(255, 255, 255, 0.22)';
+        dctx.font = '900 26px sans-serif';
+        dctx.textAlign = 'center';
+        dctx.textBaseline = 'middle';
+        dctx.fillText('💦 滑動沖洗髒污 💦', x + w / 2, y + h / 2);
+        dctx.restore();
+    }
+
+    // "廣告弱智操作" — washes a tiny strip then dumps a giant bucket of mud over the whole thing!
+    triggerStupidAdMove() {
+        if (this.state !== 'play') return;
+        this._renderDirtLayer();
+        this.dirtyGrid.fill(1);
+        this.cleanPercent = 0;
+        this.state = 'fail';
+        SFX.play('fail');
+        FX.burst(this.W / 2, 260, '#78350f', 28, 190);
+        FX.floatText(this.W / 2, 220, '🤡 廣告操作：拿泥巴水洗車？！', '#ef4444', 20);
+        setTimeout(() => this.app.showFail('廣告弱智操作：竟然把整桶黑泥巴潑回去了！'), 550);
+    }
+
+    onPointerDown(x, y) {
+        if (this.state !== 'play') return;
+        this.isSpraying = true;
+        this.aimX = x;
+        this.aimY = y;
+        this.lastX = x;
+        this.lastY = y;
+        this._washAt(x, y, x, y);
+    }
+
+    onPointerMove(x, y, isDown) {
+        if (this.state !== 'play') return;
+        this.aimX = x;
+        this.aimY = y;
+        if (!isDown || !this.isSpraying) return;
+        const lx = this.lastX !== null ? this.lastX : x;
+        const ly = this.lastY !== null ? this.lastY : y;
+        this._washAt(lx, ly, x, y);
+        this.lastX = x;
+        this.lastY = y;
+    }
+
+    onPointerUp() {
+        this.isSpraying = false;
+        this.lastX = null;
+        this.lastY = null;
+    }
+
+    _washAt(x1, y1, x2, y2) {
+        const brushRadius = 28;
+        SFX.play('spray');
+
+        // 1. Erase on offscreen dirtCanvas
+        if (this.dctx) {
+            this.dctx.save();
+            this.dctx.globalCompositeOperation = 'destination-out';
+            this.dctx.lineCap = 'round';
+            this.dctx.lineJoin = 'round';
+            this.dctx.lineWidth = brushRadius * 2;
+            this.dctx.beginPath();
+            this.dctx.moveTo(x1, y1);
+            this.dctx.lineTo(x2, y2);
+            this.dctx.stroke();
+            this.dctx.restore();
+        }
+
+        // 2. Spawn white water foam bubbles along the spray path
+        if (this.foams.length < 70) {
+            for (let i = 0; i < 3; i++) {
+                this.foams.push({
+                    x: x2 + (Math.random() - 0.5) * 40,
+                    y: y2 + (Math.random() - 0.5) * 40,
+                    vx: (Math.random() - 0.5) * 45,
+                    vy: 20 + Math.random() * 35,
+                    r: 4 + Math.random() * 6,
+                    life: 0.35 + Math.random() * 0.25
+                });
+            }
+        }
+
+        // 3. Update virtual dirtyGrid along segment (x1,y1)->(x2,y2)
+        const cellW = this.box.w / this.gridCols;
+        const cellH = this.box.h / this.gridRows;
+        for (let r = 0; r < this.gridRows; r++) {
+            const cy = this.box.y + (r + 0.5) * cellH;
+            for (let c = 0; c < this.gridCols; c++) {
+                const idx = r * this.gridCols + c;
+                if (this.dirtyGrid[idx] === 0) continue;
+                const cx = this.box.x + (c + 0.5) * cellW;
+                const cp = Geom.closestPointOnSegment(cx, cy, x1, y1, x2, y2);
+                if (Geom.dist(cx, cy, cp.x, cp.y) <= brushRadius + 4) {
+                    this.dirtyGrid[idx] = 0;
+                }
+            }
+        }
+
+        // 4. Compute cleanliness percentage
+        let cleaned = 0;
+        const total = this.dirtyGrid.length;
+        for (let i = 0; i < total; i++) {
+            if (this.dirtyGrid[i] === 0) cleaned++;
+        }
+        this.cleanPercent = Math.min(100, Math.round((cleaned / total) * 100));
+
+        // Auto-complete last 10% when reaching 90% so user never hunts for 1 invisible pixel!
+        if (this.cleanPercent >= 90 && this.state === 'play') {
+            this.cleanPercent = 100;
+            this.dirtyGrid.fill(0);
+            if (this.dctx) this.dctx.clearRect(0, 0, this.W, this.H);
+            this.state = 'win';
+            this.isSpraying = false;
+            FX.confetti(this.W, this.H);
+            FX.floatText(this.W / 2, this.box.y + this.box.h / 2, '✨ 100% 閃亮潔淨！ ✨', '#fde047', 24);
+            setTimeout(() => this.app.showWin(`極致舒壓！${this.itemTitle} 被你洗得煥然一新！`), 500);
+        }
+    }
+
+    update(dt) {
+        for (let i = this.foams.length - 1; i >= 0; i--) {
+            const f = this.foams[i];
+            f.x += f.vx * dt;
+            f.y += f.vy * dt;
+            f.life -= dt;
+            if (f.life <= 0) this.foams.splice(i, 1);
+        }
+    }
+
+    draw(ctx) {
+        // Checkered Wash Bay Tile Floor Background
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(0, 0, this.W, this.H);
+
+        const { x, y, w, h } = this.box;
+
+        // 1. Draw Clean Pristine Artwork Card Underneath
+        ctx.save();
+        Geom.roundRect(ctx, x, y, w, h, 18);
+        ctx.clip();
+
+        if (this.level === 1) {
+            // Showroom floor + Gleaming Sports Car
+            const grad = ctx.createLinearGradient(x, y, x + w, y + h);
+            grad.addColorStop(0, '#1e3a8a');
+            grad.addColorStop(0.5, '#2563eb');
+            grad.addColorStop(1, '#1d4ed8');
+            ctx.fillStyle = grad;
+            ctx.fillRect(x, y, w, h);
+
+            // Sunburst rays
+            ctx.fillStyle = 'rgba(255,255,255,0.08)';
+            for (let i = 0; i < 8; i++) {
+                ctx.beginPath();
+                ctx.moveTo(x + w / 2, y + h / 2);
+                const a1 = (i * Math.PI) / 4;
+                const a2 = a1 + 0.2;
+                ctx.arc(x + w / 2, y + h / 2, 260, a1, a2);
+                ctx.closePath();
+                ctx.fill();
+            }
+
+            // Showroom podium
+            ctx.fillStyle = '#0f172a';
+            ctx.beginPath();
+            ctx.ellipse(x + w / 2, y + h * 0.65, 130, 42, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#fde047';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            ctx.font = '135px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('🏎️', x + w / 2, y + h * 0.52);
+
+            ctx.fillStyle = '#fde047';
+            ctx.font = '900 20px sans-serif';
+            ctx.fillText('✨ 頂級超跑 閃耀登場 ✨', x + w / 2, y + h - 34);
+        } else if (this.level === 2) {
+            // Ornate Royal Persian Carpet
+            ctx.fillStyle = '#581c87';
+            ctx.fillRect(x, y, w, h);
+
+            // Gold & Emerald Geometric Borders
+            ctx.strokeStyle = '#facc15';
+            ctx.lineWidth = 8;
+            ctx.strokeRect(x + 18, y + 18, w - 36, h - 36);
+
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(x + 32, y + 32, w - 64, h - 64);
+
+            // Center Mandala Medallion
+            ctx.fillStyle = '#be185d';
+            ctx.beginPath();
+            ctx.arc(x + w / 2, y + h / 2, 85, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#fde047';
+            ctx.lineWidth = 5;
+            ctx.stroke();
+
+            ctx.font = '84px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('🕌', x + w / 2, y + h / 2);
+        } else {
+            // Ancient Golden Pharaoh Treasure Vault
+            const grad = ctx.createRadialGradient(x + w / 2, y + h / 2, 10, x + w / 2, y + h / 2, 200);
+            grad.addColorStop(0, '#fef08a');
+            grad.addColorStop(0.5, '#ca8a04');
+            grad.addColorStop(1, '#713f12');
+            ctx.fillStyle = grad;
+            ctx.fillRect(x, y, w, h);
+
+            ctx.font = '115px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('👑', x + w / 2, y + h * 0.42);
+            ctx.font = '60px sans-serif';
+            ctx.fillText('💎 🏆 💎', x + w / 2, y + h * 0.76);
+        }
+        ctx.restore();
+
+        // 2. Overlay Remaining Dirt Layer
+        if (this.dirtCanvas) {
+            ctx.drawImage(this.dirtCanvas, 0, 0);
+        }
+
+        // Card Outer Frame
+        ctx.strokeStyle = this.cleanPercent >= 100 ? '#fde047' : '#475569';
+        ctx.lineWidth = 4;
+        Geom.roundRect(ctx, x, y, w, h, 18);
+        ctx.stroke();
+
+        // 3. Draw Water Foam Bubbles
+        for (const f of this.foams) {
+            ctx.save();
+            ctx.globalAlpha = Math.max(0, f.life / 0.6);
+            ctx.fillStyle = '#ffffff';
+            ctx.strokeStyle = '#bae6fd';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        // 4. Draw High-Pressure Water Jet Stream & Nozzle
+        const nozzleBaseX = this.W / 2;
+        const nozzleBaseY = this.H - 12;
+        const angle = Math.atan2(this.aimY - nozzleBaseY, this.aimX - nozzleBaseX);
+        const tipX = nozzleBaseX + Math.cos(angle) * 58;
+        const tipY = nozzleBaseY + Math.sin(angle) * 58;
+
+        if (this.isSpraying && this.state === 'play') {
+            ctx.save();
+            const perpX = -Math.sin(angle) * 26;
+            const perpY = Math.cos(angle) * 26;
+
+            const jetGrad = ctx.createLinearGradient(tipX, tipY, this.aimX, this.aimY);
+            jetGrad.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
+            jetGrad.addColorStop(0.5, 'rgba(56, 189, 248, 0.65)');
+            jetGrad.addColorStop(1, 'rgba(186, 230, 253, 0.2)');
+
+            ctx.fillStyle = jetGrad;
+            ctx.beginPath();
+            ctx.moveTo(tipX, tipY);
+            ctx.lineTo(this.aimX + perpX, this.aimY + perpY);
+            ctx.lineTo(this.aimX - perpX, this.aimY - perpY);
+            ctx.closePath();
+            ctx.fill();
+
+            // Spray cursor ring
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.arc(this.aimX, this.aimY, 28, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        // Draw Washer Gun Lance
+        ctx.save();
+        ctx.translate(nozzleBaseX, nozzleBaseY);
+        ctx.rotate(angle);
+        ctx.fillStyle = '#facc15';
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 3;
+        Geom.roundRect(ctx, 0, -10, 48, 20, 6);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(46, -5, 14, 10);
+        ctx.restore();
+
+        // 5. Top HUD & Cleanliness Progress Bar
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+        Geom.roundRect(ctx, 16, 12, this.W - 32, 74, 12);
+        ctx.fill();
+
+        ctx.fillStyle = '#fde047';
+        ctx.font = 'bold 12px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(this.hint, 28, 30);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 14px sans-serif';
+        ctx.fillText(`潔淨度: ${this.cleanPercent}%`, 28, 52);
+
+        ctx.textAlign = 'right';
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillText(this.itemTitle, this.W - 28, 52);
+
+        // Progress Bar Track
+        ctx.fillStyle = '#334155';
+        Geom.roundRect(ctx, 28, 64, this.W - 56, 12, 6);
+        ctx.fill();
+
+        const barW = ((this.W - 56) * this.cleanPercent) / 100;
+        if (barW > 0) {
+            ctx.fillStyle = this.cleanPercent >= 90 ? '#10b981' : '#38bdf8';
+            Geom.roundRect(ctx, 28, 64, barW, 12, 6);
+            ctx.fill();
+        }
+    }
+}
+
+window.GameRegistry[6] = PowerWasherGame;
+
+
+// =========================================================
+// app.js — Main Arcade Controller, Modals, Level Routing & Fake Ad
+// =========================================================
+
+class ArcadeApp {
+    constructor() {
+        this.canvas = document.getElementById('game-canvas');
+        this.ctx = this.canvas.getContext('2d');
+        this.currentGameId = null;
+        this.currentGame = null;
+        this.currentLevel = 1;
+        this.maxLevels = 3;
+        this.lastTime = 0;
+        this.isPointerDown = false;
+        this.dodgeCount = 0;
+        this.adRewardAction = 'retry'; // 'retry' | 'skip'
+
+        this._bindUI();
+        this._bindCanvasInput();
+        requestAnimationFrame(t => this._loop(t));
+    }
+
+    _bindUI() {
+        // Game Cards on Main Menu
+        document.querySelectorAll('.game-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const id = parseInt(card.dataset.game, 10);
+                this.launchGame(id, 1);
+            });
+        });
+
+        // Header Buttons
+        document.getElementById('btn-home').addEventListener('click', () => {
+            SFX.play('click');
+            this.showMenu();
+        });
+
+        document.getElementById('btn-reset').addEventListener('click', () => {
+            SFX.play('click');
+            if (this.currentGameId) {
+                this.launchGame(this.currentGameId, this.currentLevel);
+            }
+        });
+
+        document.getElementById('btn-sound').addEventListener('click', e => {
+            SFX.enabled = !SFX.enabled;
+            e.currentTarget.textContent = SFX.enabled ? '🔊' : '🔇';
+            if (SFX.enabled) SFX.play('click');
+        });
+
+        // Level Pills (Level 1 / 2 / 3)
+        document.querySelectorAll('.lvl-pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+                const lvl = parseInt(pill.dataset.lvl, 10);
+                if (this.currentGameId) {
+                    SFX.play('click');
+                    this.launchGame(this.currentGameId, lvl);
+                }
+            });
+        });
+
+        // "🤡 廣告弱智操作" Button
+        document.getElementById('btn-stupid-ad').addEventListener('click', () => {
+            if (this.currentGame && this.currentGame.triggerStupidAdMove) {
+                this.currentGame.triggerStupidAdMove();
+            }
+        });
+
+        // Win Modal Buttons
+        document.getElementById('btn-win-next').addEventListener('click', () => {
+            SFX.play('click');
+            this.hideModals();
+            const nextLvl = this.currentLevel < this.maxLevels ? this.currentLevel + 1 : 1;
+            this.launchGame(this.currentGameId, nextLvl);
+        });
+
+        document.getElementById('btn-win-menu').addEventListener('click', () => {
+            SFX.play('click');
+            this.hideModals();
+            this.showMenu();
+        });
+
+        // Fail Modal Buttons
+        document.getElementById('btn-fail-retry').addEventListener('click', () => {
+            SFX.play('click');
+            this.hideModals();
+            this.launchGame(this.currentGameId, this.currentLevel);
+        });
+
+        document.getElementById('btn-fail-ad').addEventListener('click', () => {
+            SFX.play('click');
+            this.openFakeAd('skip');
+        });
+
+        document.getElementById('btn-fail-menu').addEventListener('click', () => {
+            SFX.play('click');
+            this.hideModals();
+            this.showMenu();
+        });
+
+        // Google AdMob Bottom Banner CTA
+        document.getElementById('btn-banner-ad').addEventListener('click', () => {
+            SFX.play('click');
+            this.openFakeAd('banner');
+        });
+
+        // Satirical Fake Ad Modal Interactions
+        const closeBtn = document.getElementById('fake-ad-close');
+        const dodgeHandler = e => {
+            if (this.dodgeCount < 2) {
+                e.preventDefault();
+                e.stopPropagation();
+                this.dodgeCount++;
+                const dx = (this.dodgeCount % 2 === 1 ? -1 : 1) * (70 + Math.random() * 50);
+                const dy = 35 + Math.random() * 60;
+                closeBtn.style.transform = `translate(${dx}px, ${dy}px)`;
+                document.getElementById('fake-ad-status').textContent =
+                    `⚠️ 關閉按鈕閃避了你的手指！(${this.dodgeCount}/2)`;
+                SFX.play('tick');
+            }
+        };
+        closeBtn.addEventListener('mouseenter', dodgeHandler);
+        closeBtn.addEventListener('touchstart', dodgeHandler, { passive: false });
+
+        closeBtn.addEventListener('click', () => {
+            if (this.dodgeCount < 2) return;
+            SFX.play('coin');
+            closeBtn.style.transform = 'none';
+            this.hideModals();
+            if (this.adRewardAction === 'skip' && this.currentGameId) {
+                const nextLvl = this.currentLevel < this.maxLevels ? this.currentLevel + 1 : 1;
+                this.launchGame(this.currentGameId, nextLvl);
+            } else if (this.currentGameId) {
+                this.launchGame(this.currentGameId, this.currentLevel);
+            }
+        });
+
+        // Fake Ad Interactive Choices (Mother & Daughter in Snow Cabin)
+        document.querySelectorAll('.fake-choice-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const act = btn.dataset.choice;
+                const statusEl = document.getElementById('fake-ad-status');
+                const emojiEl = document.getElementById('fake-ad-emoji');
+                if (act === 'wrong') {
+                    SFX.play('fail');
+                    emojiEl.textContent = '🥶❄️💨';
+                    statusEl.textContent = '❌ 廣告經典弱智操作：拿電風扇吹雪地！母女更冷了！請按右上角 X 關閉廣告領取獎勵';
+                } else {
+                    SFX.play('win');
+                    emojiEl.textContent = '🏠🔥🍲';
+                    statusEl.textContent = '✅ 成功生火取暖！現在可點擊右上角 X 關閉廣告直升下一關！';
+                }
+                this.dodgeCount = 2; // Unlock close button immediately after interacting
+                closeBtn.style.transform = 'none';
+            });
+        });
+    }
+
+    _bindCanvasInput() {
+        const getPos = e => {
+            const rect = this.canvas.getBoundingClientRect();
+            let clientX = e.clientX;
+            let clientY = e.clientY;
+            if (e.touches && e.touches.length > 0) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else if (e.changedTouches && e.changedTouches.length > 0) {
+                clientX = e.changedTouches[0].clientX;
+                clientY = e.changedTouches[0].clientY;
+            }
+            return {
+                x: (clientX - rect.left) * (this.canvas.width / rect.width),
+                y: (clientY - rect.top) * (this.canvas.height / rect.height)
+            };
+        };
+
+        this.canvas.addEventListener('mousedown', e => {
+            this.isPointerDown = true;
+            const p = getPos(e);
+            if (this.currentGame && this.currentGame.onPointerDown) {
+                this.currentGame.onPointerDown(p.x, p.y);
+            }
+        });
+
+        window.addEventListener('mousemove', e => {
+            if (!this.currentGame) return;
+            const p = getPos(e);
+            if (this.currentGame.onPointerMove) {
+                this.currentGame.onPointerMove(p.x, p.y, this.isPointerDown);
+            }
+        });
+
+        window.addEventListener('mouseup', () => {
+            if (this.isPointerDown) {
+                this.isPointerDown = false;
+                if (this.currentGame && this.currentGame.onPointerUp) {
+                    this.currentGame.onPointerUp();
+                }
+            }
+        });
+
+        this.canvas.addEventListener('touchstart', e => {
+            e.preventDefault();
+            this.isPointerDown = true;
+            const p = getPos(e);
+            if (this.currentGame && this.currentGame.onPointerDown) {
+                this.currentGame.onPointerDown(p.x, p.y);
+            }
+        }, { passive: false });
+
+        this.canvas.addEventListener('touchmove', e => {
+            e.preventDefault();
+            if (!this.currentGame) return;
+            const p = getPos(e);
+            if (this.currentGame.onPointerMove) {
+                this.currentGame.onPointerMove(p.x, p.y, this.isPointerDown);
+            }
+        }, { passive: false });
+
+        window.addEventListener('touchend', () => {
+            if (this.isPointerDown) {
+                this.isPointerDown = false;
+                if (this.currentGame && this.currentGame.onPointerUp) {
+                    this.currentGame.onPointerUp();
+                }
+            }
+        });
+    }
+
+    showMenu() {
+        this.currentGame = null;
+        this.currentGameId = null;
+        this.hideModals();
+        document.getElementById('menu-view').style.display = 'flex';
+        document.getElementById('game-view').style.display = 'none';
+        document.getElementById('header-title').textContent = '🎮 假廣告遊戲合集';
+        document.getElementById('btn-reset').style.display = 'none';
+    }
+
+    launchGame(id, level = 1) {
+        const GameClass = window.GameRegistry[id];
+        if (!GameClass) return;
+
+        this.hideModals();
+        this.currentGameId = id;
+        this.currentLevel = level;
+        FX.clear();
+
+        document.getElementById('menu-view').style.display = 'none';
+        document.getElementById('game-view').style.display = 'flex';
+        document.getElementById('btn-reset').style.display = 'flex';
+
+        const cardTitle = document.querySelector(`.game-card[data-game="${id}"] .card-title`);
+        if (cardTitle) {
+            document.getElementById('header-title').textContent = `${cardTitle.textContent} (第 ${level} 關)`;
+        }
+
+        // Update level pill active state
+        document.querySelectorAll('.lvl-pill').forEach(pill => {
+            pill.classList.toggle('active', parseInt(pill.dataset.lvl, 10) === level);
+        });
+
+        this.currentGame = new GameClass(this.canvas, this.ctx, this);
+        this.currentGame.init(level);
+    }
+
+    hideModals() {
+        document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('show'));
+    }
+
+    showWin(desc) {
+        SFX.play('win');
+        document.getElementById('win-desc').textContent = desc || '太神啦！你的智商超過 180！';
+        const nextBtn = document.getElementById('btn-win-next');
+        nextBtn.textContent = this.currentLevel < this.maxLevels
+            ? `挑戰第 ${this.currentLevel + 1} 關 ➡️`
+            : '🎉 全破！重玩第 1 關';
+        document.getElementById('win-modal').classList.add('show');
+    }
+
+    showFail(desc) {
+        SFX.play('fail');
+        document.getElementById('fail-desc').textContent = desc || '這關只有 0.01% 的人能過，你確定不再試一次？';
+        document.getElementById('fail-modal').classList.add('show');
+    }
+
+    openFakeAd(action = 'skip') {
+        this.hideModals();
+        this.adRewardAction = action;
+        this.dodgeCount = 0;
+        const closeBtn = document.getElementById('fake-ad-close');
+        closeBtn.style.transform = 'none';
+        document.getElementById('fake-ad-emoji').textContent = '👩‍👧🥶❄️';
+        document.getElementById('fake-ad-status').textContent = '請做出正確選擇拯救暴風雪中的母女（或點擊右上角 X）';
+        document.getElementById('fake-ad-modal').classList.add('show');
+    }
+
+    _loop(timestamp) {
+        if (!this.lastTime) this.lastTime = timestamp;
+        const dt = Math.min((timestamp - this.lastTime) / 1000, 0.05);
+        this.lastTime = timestamp;
+
+        if (this.currentGame) {
+            this.currentGame.update(dt);
+            this.currentGame.draw(this.ctx);
+            FX.update(dt);
+            FX.draw(this.ctx);
+        }
+
+        requestAnimationFrame(t => this._loop(t));
+    }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    window.app = new ArcadeApp();
+});
+
+</script>
+</body>
+</html>
